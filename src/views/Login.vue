@@ -4,11 +4,17 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const showPassword = ref(false)
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value
+}
+const Navigate = (string: string) => {
+  router.push(string)
 }
 </script>
 
@@ -32,7 +38,7 @@ const togglePassword = () => {
         <Separator class="text-black" />
         <p class="bg-[#E5E7EB] text-[#64748B] px-3 text-center relative -translate-y-1/2">OR</p>
       </div>
-      <p>Email</p>
+      <p class="font-semibold">Email</p>
       <div
         class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
       >
@@ -42,7 +48,7 @@ const togglePassword = () => {
           class="w-full h-full shadow-none border-none focus:border-none focus-visible:ring-0"
         />
       </div>
-      <p>Password</p>
+      <p class="font-semibold">Password</p>
       <div
         class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
       >
@@ -61,8 +67,11 @@ const togglePassword = () => {
         <p class="font-bold text-lg">Sign in</p>
       </Button>
       <div class="flex justify-between items-center w-full">
-        <p class="text-sm font-semibold">Forgot password?</p>
-        <p class="text-sm">Need an account? <span class="font-bold">Sign up</span></p>
+        <p class="text-sm font-semibold cursor-pointer">Forgot password?</p>
+        <p class="text-sm">
+          Need an account?
+          <span class="font-bold cursor-pointer" @click="Navigate('/register')">Sign up</span>
+        </p>
       </div>
     </div>
   </div>

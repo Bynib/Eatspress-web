@@ -5,6 +5,8 @@ import {
   ShoppingCart,
   Logs,
   ChevronDown,
+  CircleUserRound,
+  Settings,
   LogOut,
 } from 'lucide-vue-next'
 import {
@@ -77,7 +79,7 @@ const changeTab = (tab: string) => {
     </div>
 
     <!-- view if screen is md or larger -->
-    <div class="hidden gap-20 md:flex w-1/3 justify-center">
+    <div class="hidden md:gap-10 lg:gap-20 md:flex w-1/3 justify-center">
       <div class="flex h-full items-center gap-2 cursor-pointer" @click="changeTab('menu')">
         <SquareMenu :class="route.path === '/menu' ? 'text-[#FF6B6B]' : ''" />
         <p :class="route.path === '/menu' ? 'text-[#FF6B6B]' : ''">Menu</p>
@@ -93,10 +95,26 @@ const changeTab = (tab: string) => {
     </div>
 
     <div class="flex gap-3 items-center justify-end w-1/3">
-      <p class="hidden md:block">Customer Name</p>
-      <div class="p-3 rounded-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]">
-        <LogOut />
-      </div>
+      <span class="hidden md:block">Customer Name</span>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Button
+            class="p-3 size-[50px] cursor-pointer rounded-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
+          >
+            <CircleUserRound class="size-[25px]" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="mr-5">
+          <DropdownMenuItem class="cursor-pointer">
+            <Settings />
+            <p>Settings</p>
+          </DropdownMenuItem>
+          <DropdownMenuItem class="cursor-pointer">
+            <LogOut />
+            <p>Logout</p>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   </div>
 </template>

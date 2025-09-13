@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 @font-face {
   font-family: 'Segoe UI';
   src: url('./fonts/Segoe UI.ttf') format('ttf');

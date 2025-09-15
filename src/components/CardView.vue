@@ -12,7 +12,7 @@ import {
 <template>
   <Card class="w-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]">
       <CardHeader >
-          <img src="@/assets/kaldereta.png" alt="kaldereta" class="w-full"></img>
+          <img src="@/assets/chickenskin.jpg" alt="kaldereta" class="w-full rounded-md"></img>
       <CardTitle>
         <p>Kaldereta</p></CardTitle>
       <CardDescription>Beef stew cooked with tomato sauce and liver spread.</CardDescription>
@@ -27,7 +27,7 @@ import {
     </CardContent>
     <CardFooter>
       <Button
-        class="w-full text-[#FF6B6B] cursor-pointer font-bold flex gap-2 rounded-full py-2 px-5 shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
+        class="w-full cursor-pointer p-3 rounded-lg bg-gradient-to-r from-rose-500 to-orange-500 text-white font-bold text-md shadow-md hover:shadow-lg transition-all duration-300 hover:from-rose-600 hover:to-orange-600"
         ><p class="w-full text-center">Add to Cart</p></Button
       >
     </CardFooter>

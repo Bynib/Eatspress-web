@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ShoppingCart, Minus, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
+import { Minus, Plus, Trash2, ArrowRight } from 'lucide-vue-next'
 import Button from '@/components/ui/button/Button.vue'
 import Textarea from '@/components/ui/textarea/Textarea.vue'
 import { ref } from 'vue'
@@ -15,10 +15,11 @@ const adjustQuantity = (action: string) => {
     <div
       class="w-9/10 sm:w-9/10 md:w-9/10 lg:w-2/3 xl:w-2/3 2xl:w-1/2 flex flex-col justify-center items-center gap-5"
     >
-      <div class="p-5 rounded-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]">
-        <ShoppingCart class="text-[#FF6B6B]" />
-      </div>
-      <p class="text-2xl md:text-4xl font-extrabold">Your Cart</p>
+      <p
+        class="text-2xl md:text-4xl font-extrabold bg-gradient-to-r from-rose-500 to-orange-500 bg-clip-text h-11 text-transparent"
+      >
+        Your Cart
+      </p>
       <p class="text-center text-sm">1 item • ₱300</p>
       <div
         class="p-5 w-full flex justify-between rounded-2xl shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
@@ -77,7 +78,7 @@ const adjustQuantity = (action: string) => {
           <p class="font-bold">₱309</p>
         </div>
         <Button
-          class="cursor-pointer h-15 font-bold text-[#FF6B6B] rounded-lg shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
+          class="w-full cursor-pointer p-6 rounded-lg bg-gradient-to-r from-rose-500 to-orange-500 text-white font-bold text-md shadow-md hover:shadow-lg transition-all duration-300 hover:from-rose-600 hover:to-orange-600"
           ><p>Place Order</p>
           <ArrowRight />
         </Button>

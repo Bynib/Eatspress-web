@@ -37,7 +37,7 @@ const navbarRoutes = [{ path: '/menu' }, { path: '/cart' }, { path: '/orders' }]
   <button
     v-if="showButton"
     @click="scrollToTop"
-    class="fixed bottom-5 right-5 bg-[#FF6B6B] p-2 rounded-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
+    class="fixed cursor-pointer bottom-5 right-5 bg-[#FF6B6B] p-2 rounded-full shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
   >
     <ArrowUp class="text-white" />
   </button>

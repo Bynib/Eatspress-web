@@ -36,7 +36,7 @@ const changeTab = (tab: string) => {
   <div
     class="w-full flex justify-between p-5 sticky top-0 bg-[linear-gradient(to_bottom,rgba(229,231,235,1)_0%,rgba(229,231,235,0.9)_30%,rgba(229,231,235,0.6)_60%,rgba(229,231,235,0.3)_80%,transparent_100%)]"
   >
-    <div class="hidden sm:flex md:flex z-1 items-center gap-3 md:w-1/3">
+    <div class="hidden md:flex z-1 items-center gap-3 md:w-1/3">
       <div class="p-2.5 rounded-full bg-gradient-to-br from-rose-500 to-orange-500 shadow-lg">
         <Utensils class="text-white" />
       </div>
@@ -146,19 +146,19 @@ const changeTab = (tab: string) => {
     </div>
 
     <div class="flex gap-3 items-center justify-end w-1/3">
-      <span class="hidden md:block">Customer Name</span>
+      <span class="hidden md:block">Settings</span>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Button
             class="p-3 size-[50px] cursor-pointer rounded-full bg-[#E5E7EB] shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]"
           >
-            <CircleUserRound class="size-[25px]" />
+            <Settings class="size-[25px]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" class="mr-5">
-          <DropdownMenuItem class="cursor-pointer">
-            <Settings />
-            <p>Settings</p>
+          <DropdownMenuItem class="cursor-pointer" @click="changeTab('/settings')">
+            <CircleUserRound />
+            <p>Account</p>
           </DropdownMenuItem>
           <DropdownMenuItem class="cursor-pointer">
             <LogOut />

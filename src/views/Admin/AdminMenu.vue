@@ -6,6 +6,7 @@ import MetricCard from '@/components/MetricCard.vue'
 import TabToggle from '@/components/TabToggle.vue'
 import MenuCard from '@/components/MenuCard.vue'
 import AddItemButton from '@/components/AddItemButton.vue'
+import AddItem from '@/views/Admin/AddItem.vue'
 import kalderetaImage from '@/assets/kaldereta.png'
 import { 
   PhilippinePeso, 
@@ -18,6 +19,9 @@ const router = useRouter()
 
 // Active tab state
 const activeTab = ref<'menu' | 'orders'>('menu')
+
+// Dialog state
+const isAddItemOpen = ref(false)
 
 // Sample data
 const menuItems = ref([
@@ -64,8 +68,22 @@ const handleTabChange = (tab: 'menu' | 'orders') => {
 }
 
 const handleAddItem = () => {
-  // TODO: Implement add item functionality
-  console.log('Add item clicked')
+  isAddItemOpen.value = true
+}
+
+const handleAddItemSubmit = (item: any) => {
+  // Add new item to menuItems array
+  const newItem = {
+    id: menuItems.value.length + 1,
+    name: item.name,
+    description: item.description,
+    price: parseFloat(item.price),
+    category: item.category,
+    image: item.image ? URL.createObjectURL(item.image) : 'https://placehold.co/300x192',
+    status: 'Available' as const
+  }
+  menuItems.value.push(newItem)
+  console.log('New item added:', newItem)
 }
 
 const handleEditItem = (id: number) => {
@@ -164,6 +182,13 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    
+    <!-- Add Item Dialog -->
+    <AddItem 
+      :is-open="isAddItemOpen"
+      @update:is-open="isAddItemOpen = $event"
+      @add-item="handleAddItemSubmit"
+    />
   </div>
 </template>
 

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { PhilippinePeso, Clock, CheckCircle, Menu } from 'lucide-vue-next'
 import AdminHeader from '@/components/AdminHeader.vue'
-import MetricCard from '@/components/MetricCard.vue'
+import AdminMetrics from '@/components/AdminMetrics.vue'
 import TabToggle from '@/components/TabToggle.vue'
 import OrderCard from '@/components/OrderCard.vue'
 
@@ -42,7 +41,7 @@ const orders = ref<Order[]>([
     id: '1',
     customerName: 'Rimar Navaja',
     email: 'rimar12311231@gmail.com',
-    date: 'August 23rd, 2025',
+    date: new Date().toDateString(), // Today's date
     time: '7:02 AM',
     items: [
       { name: 'Kaldereta', quantity: 1, price: 300 }
@@ -53,10 +52,10 @@ const orders = ref<Order[]>([
   },
   {
     id: '2',
-    customerName: 'Rimar Navaja',
-    email: 'rimar12311231@gmail.com',
-    date: 'August 23rd, 2025',
-    time: '7:02 AM',
+    customerName: 'Maria Santos',
+    email: 'maria.santos@gmail.com',
+    date: new Date().toDateString(), // Today's date
+    time: '8:15 AM',
     items: [
       { name: 'Pork Humba', quantity: 1, price: 240 },
       { name: 'Kaldereta', quantity: 1, price: 300 }
@@ -67,16 +66,29 @@ const orders = ref<Order[]>([
   },
   {
     id: '3',
-    customerName: 'Rimar Navaja',
-    email: 'rimar12311231@gmail.com',
-    date: 'August 23rd, 2025',
-    time: '7:02 AM',
+    customerName: 'Juan Dela Cruz',
+    email: 'juan.delacruz@gmail.com',
+    date: new Date(Date.now() - 86400000).toDateString(), // Yesterday
+    time: '6:30 PM',
     items: [
-      { name: 'Kaldereta', quantity: 1, price: 300 }
+      { name: 'Chicken Adobo', quantity: 2, price: 280 }
     ],
-    specialInstructions: '23 12312312312312',
-    status: 'pending',
-    totalPrice: 300
+    specialInstructions: 'Extra spicy',
+    status: 'delivered',
+    totalPrice: 560
+  },
+  {
+    id: '4',
+    customerName: 'Ana Garcia',
+    email: 'ana.garcia@gmail.com',
+    date: new Date().toDateString(), // Today's date
+    time: '12:45 PM',
+    items: [
+      { name: 'Sinigang', quantity: 1, price: 250 }
+    ],
+    specialInstructions: 'Less sour',
+    status: 'preparing',
+    totalPrice: 250
   }
 ])
 
@@ -93,30 +105,6 @@ const filteredOrders = computed(() => {
   })
 })
 
-const totalRevenue = computed(() => {
-  return orders.value.reduce((sum, order) => sum + order.totalPrice, 0)
-})
-
-const pendingOrders = computed(() => {
-  return orders.value.filter(order => order.status === 'pending').length
-})
-
-const todaysOrders = computed(() => {
-  const today = new Date().toDateString()
-  return orders.value.filter(order => {
-    const orderDate = new Date(order.date).toDateString()
-    return orderDate === today
-  }).length
-})
-
-const menuItems = computed(() => {
-  const uniqueItems = new Set()
-  orders.value.forEach(order => {
-    order.items.forEach(item => uniqueItems.add(item.name))
-  })
-  return uniqueItems.size
-})
-
 // Methods
 const handleTabChange = (tab: 'menu' | 'orders') => {
   activeTab.value = tab
@@ -130,10 +118,6 @@ const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
   if (order) {
     order.status = newStatus
   }
-}
-
-const formatCurrency = (amount: number) => {
-  return `₱${amount.toLocaleString()}`
 }
 
 onMounted(() => {
@@ -163,32 +147,10 @@ onMounted(() => {
         </div>
         
         <!-- Metrics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Total Revenue"
-            :value="formatCurrency(totalRevenue)"
-            :icon="PhilippinePeso"
-            icon-class="text-green-600"
-          />
-          <MetricCard
-            title="Pending Orders"
-            :value="pendingOrders"
-            :icon="Clock"
-            icon-class="text-yellow-600"
-          />
-          <MetricCard
-            title="Today's Orders"
-            :value="todaysOrders"
-            :icon="CheckCircle"
-            icon-class="text-blue-600"
-          />
-          <MetricCard
-            title="Menu Items"
-            :value="menuItems"
-            :icon="Menu"
-            icon-class="text-purple-600"
-          />
-        </div>
+        <AdminMetrics 
+          :orders="orders"
+          type="orders"
+        />
         
         <!-- Tab Toggle -->
         <div class="flex justify-center mb-8">

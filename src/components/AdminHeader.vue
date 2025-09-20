@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Utensils, Menu, Logs, User, LogOut } from 'lucide-vue-next'
+import { Utensils, SquareMenu, Logs, User, LogOut } from 'lucide-vue-next'
 
 defineProps<{
   activeTab: string
@@ -26,7 +26,7 @@ defineEmits<{
         :class="{ 'text-gray-800': activeTab === 'menu' }"
         @click="$emit('tab-change', 'menu')"
       >
-        <Menu class="w-3.5 h-6" />
+        <SquareMenu class="w-6 h-6" />
         <span class="text-sm font-semibold">Menu</span>
       </button>
       <button 
@@ -34,7 +34,7 @@ defineEmits<{
         :class="{ 'text-gray-800': activeTab === 'orders' }"
         @click="$emit('tab-change', 'orders')"
       >
-        <Logs class="w-5 h-6" />
+        <Logs class="w-6 h-6" />
         <span class="text-sm font-semibold">Orders</span>
       </button>
     </div>

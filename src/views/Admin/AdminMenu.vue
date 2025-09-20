@@ -2,19 +2,14 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AdminHeader from '@/components/AdminHeader.vue'
-import MetricCard from '@/components/MetricCard.vue'
+import AdminMetrics from '@/components/AdminMetrics.vue'
 import TabToggle from '@/components/TabToggle.vue'
 import MenuCard from '@/components/MenuCard.vue'
 import AddItemButton from '@/components/AddItemButton.vue'
 import AddItem from '@/views/Admin/AddItem.vue'
+import EditItem from '@/views/Admin/EditItem.vue'
 import DeleteItemDialog from '@/components/DeleteItemDialog.vue'
 import kalderetaImage from '@/assets/kaldereta.png'
-import { 
-  PhilippinePeso, 
-  Clock, 
-  CheckCircle, 
-  Menu 
-} from 'lucide-vue-next'
 
 const router = useRouter()
 
@@ -23,7 +18,9 @@ const activeTab = ref<'menu' | 'orders'>('menu')
 
 // Dialog state
 const isAddItemOpen = ref(false)
+const isEditItemOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
+const itemToEdit = ref<any>(null)
 const itemToDelete = ref<any>(null)
 
 // Sample data
@@ -53,14 +50,19 @@ const menuItems = ref([
     price: 280,
     category: 'mains',
     image: kalderetaImage,
+    status: 'Unavailable' as const
+  },
+  {
+    id: 4,
+    name: 'Sinigang',
+    description: 'Sour soup with tamarind and vegetables.',
+    price: 250,
+    category: 'mains',
+    image: kalderetaImage,
     status: 'Available' as const
   }
 ])
 
-// Computed properties for metrics
-const totalRevenue = computed(() => 10121.94)
-const pendingOrders = computed(() => 2)
-const todaysOrders = computed(() => 0)
 
 // Methods
 const handleTabChange = (tab: 'menu' | 'orders') => {
@@ -90,8 +92,29 @@ const handleAddItemSubmit = (item: any) => {
 }
 
 const handleEditItem = (id: number) => {
-  // TODO: Implement edit item functionality
-  console.log('Edit item:', id)
+  const item = menuItems.value.find(item => item.id === id)
+  if (item) {
+    itemToEdit.value = item
+    isEditItemOpen.value = true
+  }
+}
+
+const handleUpdateItem = (id: number, updatedItem: any) => {
+  const index = menuItems.value.findIndex(item => item.id === id)
+  if (index > -1) {
+    // Update the item with new data
+    menuItems.value[index] = {
+      ...menuItems.value[index],
+      name: updatedItem.name,
+      description: updatedItem.description,
+      price: parseFloat(updatedItem.price),
+      category: updatedItem.category,
+      image: updatedItem.image ? URL.createObjectURL(updatedItem.image) : menuItems.value[index].image
+    }
+    console.log('Item updated:', id, updatedItem)
+  }
+  isEditItemOpen.value = false
+  itemToEdit.value = null
 }
 
 const handleDeleteItem = (id: number) => {
@@ -112,9 +135,6 @@ const handleConfirmDelete = (id: number) => {
   itemToDelete.value = null
 }
 
-const formatCurrency = (amount: number) => {
-  return `₱${amount.toFixed(2)}`
-}
 
 onMounted(() => {
   // Initialize component
@@ -143,32 +163,10 @@ onMounted(() => {
         </div>
         
         <!-- Metrics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Total Revenue"
-            :value="formatCurrency(totalRevenue)"
-            :icon="PhilippinePeso"
-            icon-class="text-green-600"
-          />
-          <MetricCard
-            title="Pending Orders"
-            :value="pendingOrders"
-            :icon="Clock"
-            icon-class="text-yellow-600"
-          />
-          <MetricCard
-            title="Today's Orders"
-            :value="todaysOrders"
-            :icon="CheckCircle"
-            icon-class="text-blue-600"
-          />
-          <MetricCard
-            title="Menu Items"
-            :value="menuItems.length"
-            :icon="Menu"
-            icon-class="text-purple-600"
-          />
-        </div>
+        <AdminMetrics 
+          :menu-items="menuItems"
+          type="menu"
+        />
         
         <!-- Tab Toggle -->
         <div class="flex justify-center mb-8">
@@ -204,6 +202,14 @@ onMounted(() => {
       :is-open="isAddItemOpen"
       @update:is-open="isAddItemOpen = $event"
       @add-item="handleAddItemSubmit"
+    />
+    
+    <!-- Edit Item Dialog -->
+    <EditItem
+      :is-open="isEditItemOpen"
+      :menu-item="itemToEdit"
+      @update:is-open="isEditItemOpen = $event"
+      @update-item="handleUpdateItem"
     />
     
     <!-- Delete Item Dialog -->

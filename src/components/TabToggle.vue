@@ -1,5 +1,5 @@
 <template>
-  <div class="w-64 h-16 bg-gray-200 rounded-2xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center p-2">
+  <div class="w-64 h-16 bg-gray-200 rounded-2xl  shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE] flex items-center p-2">
     <button
       @click="$emit('tab-change', 'orders')"
       :class="[

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { PhilippinePeso, Clock, CheckCircle, Menu } from 'lucide-vue-next'
 import AdminHeader from '@/components/AdminHeader.vue'
 import MetricCard from '@/components/MetricCard.vue'
@@ -26,6 +27,9 @@ interface Order {
   status: OrderStatus
   totalPrice: number
 }
+
+// Router
+const router = useRouter()
 
 // State
 const activeTab = ref('orders')
@@ -114,8 +118,11 @@ const menuItems = computed(() => {
 })
 
 // Methods
-const handleTabChange = (tab: string) => {
+const handleTabChange = (tab: 'menu' | 'orders') => {
   activeTab.value = tab
+  if (tab === 'menu') {
+    router.push('/admin/menu')
+  }
 }
 
 const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {

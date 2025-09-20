@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-200 rounded-2xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] p-6 flex justify-between items-center">
+  <div class="bg-gray-200 rounded-2xl  shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE] p-6 flex justify-between items-center">
     <div class="flex flex-col gap-2">
       <div class="text-gray-600 text-sm font-normal">{{ title }}</div>
       <div class="text-gray-800 text-2xl font-bold">{{ value }}</div>

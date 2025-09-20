@@ -7,6 +7,7 @@ import TabToggle from '@/components/TabToggle.vue'
 import MenuCard from '@/components/MenuCard.vue'
 import AddItemButton from '@/components/AddItemButton.vue'
 import AddItem from '@/views/Admin/AddItem.vue'
+import DeleteItemDialog from '@/components/DeleteItemDialog.vue'
 import kalderetaImage from '@/assets/kaldereta.png'
 import { 
   PhilippinePeso, 
@@ -22,6 +23,8 @@ const activeTab = ref<'menu' | 'orders'>('menu')
 
 // Dialog state
 const isAddItemOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
+const itemToDelete = ref<any>(null)
 
 // Sample data
 const menuItems = ref([
@@ -92,8 +95,21 @@ const handleEditItem = (id: number) => {
 }
 
 const handleDeleteItem = (id: number) => {
-  // TODO: Implement delete item functionality
-  console.log('Delete item:', id)
+  const item = menuItems.value.find(item => item.id === id)
+  if (item) {
+    itemToDelete.value = item
+    isDeleteDialogOpen.value = true
+  }
+}
+
+const handleConfirmDelete = (id: number) => {
+  const index = menuItems.value.findIndex(item => item.id === id)
+  if (index > -1) {
+    menuItems.value.splice(index, 1)
+    console.log('Item deleted:', id)
+  }
+  isDeleteDialogOpen.value = false
+  itemToDelete.value = null
 }
 
 const formatCurrency = (amount: number) => {
@@ -188,6 +204,14 @@ onMounted(() => {
       :is-open="isAddItemOpen"
       @update:is-open="isAddItemOpen = $event"
       @add-item="handleAddItemSubmit"
+    />
+    
+    <!-- Delete Item Dialog -->
+    <DeleteItemDialog
+      :is-open="isDeleteDialogOpen"
+      :menu-item="itemToDelete"
+      @update:is-open="isDeleteDialogOpen = $event"
+      @confirm-delete="handleConfirmDelete"
     />
   </div>
 </template>

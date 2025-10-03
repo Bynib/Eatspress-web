@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full px-7 py-5 bg-gray-200 rounded-2xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] flex flex-col gap-5">
+  <div class="w-full px-7 py-5 bg-gray-200 rounded-2xl shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE] flex flex-col gap-5">
     <!-- Order Header -->
     <div class="flex flex-col gap-5">
       <div class="flex flex-col gap-3.5">

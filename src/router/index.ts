@@ -5,6 +5,7 @@ import CustomerMenu from '@/views/Customer/Menu.vue'
 import CustomerCart from '@/views/Customer/Cart.vue'
 import CustomerOrders from '@/views/Customer/Orders.vue'
 import AccountSettings from '@/views/Customer/AccountSettings.vue'
+import AdminOrders from '@/views/Admin/AdminOrders.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: AccountSettings,
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminOrders,
     },
   ],
 })

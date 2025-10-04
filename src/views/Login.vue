@@ -1,14 +1,19 @@
 <script lang="ts" setup>
-import { Utensils, Mail, Lock, Eye, EyeClosed } from 'lucide-vue-next'
+import { Utensils, Mail, Lock, Eye, EyeClosed, User2 } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import router from '@/router'
+import { useAuthStore } from '@/stores/auth'
 
-const router = useRouter()
-
+const auth = useAuthStore()
 const showPassword = ref(false)
+
+const userInfo = ref({
+  username: '',
+  password: '',
+})
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value
@@ -30,13 +35,14 @@ const Navigate = (string: string) => {
       <p class="text-[#64748B]">Sign in to continue</p>
 
       <div class="flex flex-col w-full gap-2">
-        <p class="font-semibold w-full">Email</p>
+        <p class="font-semibold w-full">Username</p>
         <div
           class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
         >
-          <Mail class="text-[#94A3B8]" />
+          <User2 class="text-[#94A3B8]" />
           <Input
-            placeholder="you@example.com"
+            v-model="userInfo.username"
+            placeholder="ChuckNorris"
             class="w-full h-full shadow-none text-sm sm:text-sm md:text-md border-none focus:border-none focus-visible:ring-0"
           />
         </div>
@@ -48,6 +54,7 @@ const Navigate = (string: string) => {
         >
           <Lock class="text-[#94A3B8]" />
           <Input
+            v-model="userInfo.password"
             :type="showPassword ? 'text' : 'password'"
             placeholder="••••••••"
             class="w-full h-full shadow-none text-sm sm:text-sm md:text-md border-none focus:border-none focus-visible:ring-0"
@@ -59,6 +66,8 @@ const Navigate = (string: string) => {
       <p class="w-full flex justify-end text-sm font-bold cursor-pointer">Forgot password?</p>
 
       <Button
+        :disabled="auth.isLoading"
+        @click="auth.login(userInfo)"
         class="w-full cursor-pointer p-6 rounded-lg bg-gradient-to-r from-rose-500 to-orange-500 text-white font-bold text-md shadow-md hover:shadow-lg transition-all duration-300 hover:from-rose-600 hover:to-orange-600"
       >
         <p class="font-bold text-lg">Sign in</p>

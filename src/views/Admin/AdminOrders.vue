@@ -43,12 +43,10 @@ const orders = ref<Order[]>([
     email: 'rimar12311231@gmail.com',
     date: new Date().toDateString(), // Today's date
     time: '7:02 AM',
-    items: [
-      { name: 'Kaldereta', quantity: 1, price: 300 }
-    ],
+    items: [{ name: 'Kaldereta', quantity: 1, price: 300 }],
     specialInstructions: '23 12312312312312',
     status: 'pending',
-    totalPrice: 300
+    totalPrice: 300,
   },
   {
     id: '2',
@@ -58,11 +56,11 @@ const orders = ref<Order[]>([
     time: '8:15 AM',
     items: [
       { name: 'Pork Humba', quantity: 1, price: 240 },
-      { name: 'Kaldereta', quantity: 1, price: 300 }
+      { name: 'Kaldereta', quantity: 1, price: 300 },
     ],
     specialInstructions: '',
     status: 'ready',
-    totalPrice: 540
+    totalPrice: 540,
   },
   {
     id: '3',
@@ -70,12 +68,10 @@ const orders = ref<Order[]>([
     email: 'juan.delacruz@gmail.com',
     date: new Date(Date.now() - 86400000).toDateString(), // Yesterday
     time: '6:30 PM',
-    items: [
-      { name: 'Chicken Adobo', quantity: 2, price: 280 }
-    ],
+    items: [{ name: 'Chicken Adobo', quantity: 2, price: 280 }],
     specialInstructions: 'Extra spicy',
     status: 'delivered',
-    totalPrice: 560
+    totalPrice: 560,
   },
   {
     id: '4',
@@ -83,38 +79,39 @@ const orders = ref<Order[]>([
     email: 'ana.garcia@gmail.com',
     date: new Date().toDateString(), // Today's date
     time: '12:45 PM',
-    items: [
-      { name: 'Sinigang', quantity: 1, price: 250 }
-    ],
+    items: [{ name: 'Sinigang', quantity: 1, price: 250 }],
     specialInstructions: 'Less sour',
     status: 'preparing',
-    totalPrice: 250
-  }
+    totalPrice: 250,
+  },
 ])
 
 // Computed properties
 const filteredOrders = computed(() => {
-  return orders.value.filter(order => {
-    const matchesSearch = !searchQuery.value || 
+  return orders.value.filter((order) => {
+    const matchesSearch =
+      !searchQuery.value ||
       order.customerName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       order.email.toLowerCase().includes(searchQuery.value.toLowerCase())
-    
+
     const matchesStatus = !statusFilter.value || order.status === statusFilter.value
-    
+
     return matchesSearch && matchesStatus
   })
 })
 
 // Methods
-const handleTabChange = (tab: 'menu' | 'orders') => {
+const handleTabChange = (tab: string) => {
   activeTab.value = tab
   if (tab === 'menu') {
     router.push('/admin/menu')
+  } else if (tab === 'orders') {
+    router.push('/admin/orders')
   }
 }
 
 const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-  const order = orders.value.find(o => o.id === orderId)
+  const order = orders.value.find((o) => o.id === orderId)
   if (order) {
     order.status = newStatus
   }
@@ -128,38 +125,25 @@ onMounted(() => {
 <template>
   <div class="min-h-screen w-full bg-gray-200">
     <!-- Header -->
-    <AdminHeader 
-      :active-tab="activeTab" 
-      @tab-change="handleTabChange" 
-    />
-    
+    <AdminHeader :active-tab="activeTab" @tab-change="handleTabChange" />
+
     <!-- Main Content -->
     <div class="w-full bg-gray-200 pt-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Dashboard Title -->
         <div class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-gray-800 mb-2">
-            Admin Dashboard
-          </h1>
-          <p class="text-gray-600 text-base">
-            Manage your restaurant operations
-          </p>
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+          <p class="text-gray-600 text-base">Manage your restaurant operations</p>
         </div>
-        
+
         <!-- Metrics Cards -->
-        <AdminMetrics 
-          :orders="orders"
-          type="orders"
-        />
-        
+        <AdminMetrics :orders="orders" type="orders" />
+
         <!-- Tab Toggle -->
         <div class="flex justify-center mb-8">
-          <TabToggle 
-            :active-tab="activeTab" 
-            @tab-change="handleTabChange" 
-          />
+          <TabToggle :active-tab="activeTab" @tab-change="handleTabChange" />
         </div>
-        
+
         <!-- Orders List -->
         <div class="grid grid-cols-1 gap-6">
           <OrderCard
@@ -173,4 +157,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-

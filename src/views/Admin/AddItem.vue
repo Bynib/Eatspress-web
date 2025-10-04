@@ -11,15 +11,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-
-interface MenuItemForm {
-  name: string
-  price: string
-  description: string
-  category: string
-  prepTime: string
-  image: File | null
-}
+import type { Menu } from '@/models/menu'
 
 const props = defineProps<{
   isOpen: boolean
@@ -27,20 +19,24 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:isOpen': [value: boolean]
-  'add-item': [item: MenuItemForm]
+  'add-item': [item: Partial<Menu>]
 }>()
 
-const form = reactive<MenuItemForm>({
+const form = reactive<Partial<Menu>>({
   name: '',
-  price: '',
   description: '',
-  category: '',
-  prepTime: '',
-  image: null
+  prep_Time: 0,
+  category_Id: 0,
+  price: 0,
+  image: null,
 })
+const fileInput = ref<HTMLInputElement | null>(null)
 
 const selectedFile = ref<File | null>(null)
 
+const handleChooseFile = () => {
+  fileInput.value?.click()
+}
 const handleOpenChange = (open: boolean) => {
   emit('update:isOpen', open)
 }
@@ -61,13 +57,13 @@ const handleSubmit = () => {
 const handleCancel = () => {
   // Reset form
   form.name = ''
-  form.price = ''
+  form.price = 0
   form.description = ''
-  form.category = ''
-  form.prepTime = ''
+  form.category_Id = 0
+  form.prep_Time = 0
   form.image = null
   selectedFile.value = null
-  
+
   emit('update:isOpen', false)
 }
 </script>
@@ -75,17 +71,21 @@ const handleCancel = () => {
 <template>
   <Dialog :open="isOpen" @update:open="handleOpenChange">
     <DialogContent class="max-w-6xl w-full h-auto p-0 bg-transparent border-0 shadow-none">
-      <div class="w-full px-8 py-6 bg-gray-200 rounded-3xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)]">
+      <div
+        class="w-full px-8 py-6 bg-gray-200 rounded-3xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)]"
+      >
         <div class="w-full space-y-6">
           <!-- Title -->
           <div class="text-center text-gray-800 text-xl font-bold leading-7">Add Menu Item</div>
-          
+
           <!-- Name and Price Row -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Name Field -->
             <div class="space-y-1">
               <label class="block text-gray-800 text-xs font-semibold leading-tight">Name</label>
-              <div class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]">
+              <div
+                class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]"
+              >
                 <input
                   v-model="form.name"
                   type="text"
@@ -95,11 +95,13 @@ const handleCancel = () => {
                 />
               </div>
             </div>
-            
+
             <!-- Price Field -->
             <div class="space-y-1">
               <label class="block text-gray-800 text-xs font-semibold leading-tight">Price</label>
-              <div class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]">
+              <div
+                class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]"
+              >
                 <input
                   v-model="form.price"
                   type="number"
@@ -110,11 +112,15 @@ const handleCancel = () => {
               </div>
             </div>
           </div>
-          
+
           <!-- Description Field -->
           <div class="space-y-1">
-            <label class="block text-gray-800 text-xs font-semibold leading-tight">Description</label>
-            <div class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]">
+            <label class="block text-gray-800 text-xs font-semibold leading-tight"
+              >Description</label
+            >
+            <div
+              class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]"
+            >
               <textarea
                 v-model="form.description"
                 placeholder="Enter item description"
@@ -124,37 +130,47 @@ const handleCancel = () => {
               ></textarea>
             </div>
           </div>
-          
+
           <!-- Category and Prep Time Row -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Category Field -->
             <div class="space-y-1">
-              <label class="block text-gray-800 text-xs font-semibold leading-tight">Category</label>
+              <label class="block text-gray-800 text-xs font-semibold leading-tight"
+                >Category</label
+              >
               <div class="relative">
                 <select
-                  v-model="form.category"
+                  v-model="form.category_Id"
                   class="w-full h-9 px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)] text-gray-800 text-sm font-normal leading-tight bg-transparent border-0 outline-none appearance-none"
                   required
                 >
-                  <option value="">Select category</option>
-                  <option value="mains">Main Course</option>
-                  <option value="appetizers">Appetizers</option>
-                  <option value="desserts">Desserts</option>
-                  <option value="beverages">Beverages</option>
+                  <option :value="0">Select category</option>
+                  <option :value="1">Appetizer</option>
+                  <option :value="2">Main Course</option>
+                  <option :value="3">Dessert</option>
+                  <option :value="4">Beverage</option>
                 </select>
                 <!-- Custom dropdown arrow -->
-                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <div class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-gray-600"></div>
+                <div
+                  class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
+                >
+                  <div
+                    class="w-0 h-0 border-l-2 border-r-2 border-t-2 border-transparent border-t-gray-600"
+                  ></div>
                 </div>
               </div>
             </div>
-            
+
             <!-- Prep Time Field -->
             <div class="space-y-1">
-              <label class="block text-gray-800 text-xs font-semibold leading-tight">Prep Time (min)</label>
-              <div class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]">
+              <label class="block text-gray-800 text-xs font-semibold leading-tight"
+                >Prep Time (min)</label
+              >
+              <div
+                class="px-3 py-2 bg-gray-200 rounded-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)]"
+              >
                 <input
-                  v-model="form.prepTime"
+                  v-model="form.prep_Time"
                   type="number"
                   placeholder="15"
                   class="w-full h-5 bg-transparent border-0 outline-none text-gray-800 text-sm font-normal leading-tight"
@@ -163,31 +179,35 @@ const handleCancel = () => {
               </div>
             </div>
           </div>
-          
+
           <!-- Upload Image Field -->
           <div class="space-y-1">
-            <label class="block text-gray-800 text-xs font-semibold leading-tight">Upload image</label>
+            <label class="block text-gray-800 text-xs font-semibold leading-tight"
+              >Upload image</label
+            >
             <div class="flex">
-              <button
-                type="button"
-                @click="$refs.fileInput.click()"
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                @change="handleFileChange"
+                class="hidden"
+                id="addimage"
+              />
+              <label
+                for="addimage"
                 class="px-3 py-2 bg-gray-200 rounded-l-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-gray-800 text-xs font-normal leading-tight hover:bg-gray-100 transition-colors"
               >
                 Choose File
-              </button>
-              <div class="flex-1 px-3 py-2 bg-gray-200 rounded-r-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center">
+              </label>
+              <div
+                class="flex-1 px-3 py-2 bg-gray-200 rounded-r-xl shadow-[inset_-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[inset_8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center"
+              >
                 <span class="text-gray-800/40 text-xs font-normal leading-tight truncate">
                   {{ selectedFile ? selectedFile.name : 'No file chosen' }}
                 </span>
               </div>
             </div>
-            <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              @change="handleFileChange"
-              class="hidden"
-            />
           </div>
           <!-- Action Buttons -->
           <div class="flex justify-end gap-4 pt-4">
@@ -198,15 +218,19 @@ const handleCancel = () => {
             >
               Cancel
             </button>
-            
+
             <button
               type="submit"
               @click="handleSubmit"
               class="px-6 py-2 bg-gray-200 rounded-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-red-400 text-sm font-semibold leading-tight hover:bg-gray-100 transition-colors flex items-center gap-2"
             >
               <div class="w-4 h-4 relative">
-                <div class="w-2.5 h-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t border-red-400"></div>
-                <div class="w-0 h-2.5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l border-red-400"></div>
+                <div
+                  class="w-2.5 h-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t border-red-400"
+                ></div>
+                <div
+                  class="w-0 h-2.5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l border-red-400"
+                ></div>
               </div>
               Add Item
             </button>
@@ -216,4 +240,3 @@ const handleCancel = () => {
     </DialogContent>
   </Dialog>
 </template>
-

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { PhilippinePeso, Clock, CheckCircle, Menu } from 'lucide-vue-next'
+import { PhilippinePeso, Clock, CheckCircle, Menu as Menu2 } from 'lucide-vue-next'
 import MetricCard from '@/components/MetricCard.vue'
+import type { Menu } from '@/models/menu'
 
 interface Order {
   id: string
@@ -19,19 +20,9 @@ interface Order {
   totalPrice: number
 }
 
-interface MenuItem {
-  id: number
-  name: string
-  description: string
-  price: number
-  category: string
-  image: string
-  status: 'Available' | 'Unavailable'
-}
-
 const props = defineProps<{
   orders?: Order[]
-  menuItems?: MenuItem[]
+  menuItems?: Menu[]
   type: 'orders' | 'menu'
 }>()
 
@@ -43,20 +34,20 @@ const ordersTotalRevenue = computed(() => {
 
 const ordersPendingOrders = computed(() => {
   if (!props.orders) return 0
-  return props.orders.filter(order => order.status === 'pending').length
+  return props.orders.filter((order) => order.status === 'pending').length
 })
 
 const ordersTodaysOrders = computed(() => {
   if (!props.orders) return 0
   const today = new Date().toDateString()
-  return props.orders.filter(order => order.date === today).length
+  return props.orders.filter((order) => order.date === today).length
 })
 
 const ordersMenuItems = computed(() => {
   if (!props.orders) return 0
   const uniqueItems = new Set()
-  props.orders.forEach(order => {
-    order.items.forEach(item => uniqueItems.add(item.name))
+  props.orders.forEach((order) => {
+    order.items.forEach((item) => uniqueItems.add(item.name))
   })
   return uniqueItems.size
 })
@@ -64,19 +55,17 @@ const ordersMenuItems = computed(() => {
 // Computed properties for menu metrics
 const menuTotalRevenue = computed(() => {
   if (!props.menuItems) return 0
-  return props.menuItems
-    .filter(item => item.status === 'Available')
-    .reduce((sum, item) => sum + item.price, 0)
+  return props.menuItems.reduce((sum, item) => sum + item.price, 0)
 })
 
 const menuPendingOrders = computed(() => {
   if (!props.menuItems) return 0
-  return props.menuItems.filter(item => item.status === 'Unavailable').length
+  return props.menuItems.length
 })
 
 const menuTodaysOrders = computed(() => {
   if (!props.menuItems) return 0
-  return props.menuItems.filter(item => item.status === 'Available').length
+  return props.menuItems.length
 })
 
 const menuMenuItems = computed(() => {
@@ -111,15 +100,15 @@ const titles = computed(() => {
     return {
       revenue: 'Total Revenue',
       pending: 'Pending Orders',
-      today: 'Today\'s Orders',
-      items: 'Menu Items'
+      today: "Today's Orders",
+      items: 'Menu Items',
     }
   } else {
     return {
       revenue: 'Potential Revenue',
       pending: 'Unavailable Items',
       today: 'Available Items',
-      items: 'Total Menu Items'
+      items: 'Total Menu Items',
     }
   }
 })
@@ -148,7 +137,7 @@ const titles = computed(() => {
     <MetricCard
       :title="titles.items"
       :value="menuItems"
-      :icon="Menu"
+      :icon="Menu2"
       icon-class="text-purple-600"
     />
   </div>

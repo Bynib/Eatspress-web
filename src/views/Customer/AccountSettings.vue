@@ -11,6 +11,7 @@ import {
   Lock,
   Eye,
   EyeClosed,
+  CircleUser,
 } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'

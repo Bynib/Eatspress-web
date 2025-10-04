@@ -4,7 +4,11 @@ import Navbar from './components/Navbar.vue'
 import { useRoute } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ArrowUp } from 'lucide-vue-next'
+import { Toaster } from 'vue-sonner'
+import { useSonnerStore } from './stores/sonner'
+import 'vue-sonner/style.css'
 
+const sonner = useSonnerStore()
 const route = useRoute()
 
 const showButton = ref(false)
@@ -32,6 +36,7 @@ const navbarRoutes = [{ path: '/menu' }, { path: '/cart' }, { path: '/orders' }]
 </script>
 
 <template>
+  <Toaster :theme="sonner.theme" />
   <Navbar v-if="navbarRoutes.some((r) => r.path === route.path)" />
   <RouterView />
   <button

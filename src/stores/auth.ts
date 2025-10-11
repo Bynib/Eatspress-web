@@ -113,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
   //     }
   //   }
 
-  const login = async (credentials: { username: string; password: string }) => {
+  const login = async (credentials: { email: string; password: string }) => {
     isLoading.value = true
     try {
       const res = await useFetch(URL + '/auth/login', {
@@ -182,7 +182,6 @@ export const useAuthStore = defineStore('auth', () => {
     firstName?: string
     lastName?: string
     email?: string
-    userName?: string
     phoneNumber?: string
     oldPassword?: string
     newPassword?: string
@@ -204,7 +203,7 @@ export const useAuthStore = defineStore('auth', () => {
         return true
       } else sonner.success(data.message)
       // update only non-sensitive info in store
-      if (data.user.userName || data.user.userEmail || data.user.userDob) {
+      if (data.user.Email) {
         user.value = { ...user.value, ...data.user }
         localStorage.setItem('user', JSON.stringify(user.value))
       }

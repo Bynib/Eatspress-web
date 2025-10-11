@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Utensils, Mail, Lock, Eye, EyeClosed, User2 } from 'lucide-vue-next'
+import { Utensils, Mail, Lock, Eye, EyeClosed } from 'lucide-vue-next'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -11,7 +11,7 @@ const auth = useAuthStore()
 const showPassword = ref(false)
 
 const userInfo = ref({
-  username: '',
+  email: '',
   password: '',
 })
 
@@ -35,14 +35,15 @@ const Navigate = (string: string) => {
       <p class="text-[#64748B]">Sign in to continue</p>
 
       <div class="flex flex-col w-full gap-2">
-        <p class="font-semibold w-full">Username</p>
+        <p class="font-semibold w-full">Email</p>
         <div
           class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
         >
-          <User2 class="text-[#94A3B8]" />
+          <Mail class="text-[#94A3B8]" />
           <Input
-            v-model="userInfo.username"
-            placeholder="ChuckNorris"
+            v-model="userInfo.email"
+            type="email"
+            placeholder="you@example.com"
             class="w-full h-full shadow-none text-sm sm:text-sm md:text-md border-none focus:border-none focus-visible:ring-0"
           />
         </div>

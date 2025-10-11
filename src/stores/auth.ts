@@ -19,10 +19,10 @@ export const useAuthStore = defineStore('auth', () => {
   const userInfo = computed(() => user.value)
 
   const register = async (credentials: {
-    firstName: string
-    lastName: string
+    firstname: string
+    lastname: string
     email: string
-    phoneNumber: string
+    phone_No: string
     password: string
     confirmPassword: string
   }) => {

@@ -15,7 +15,7 @@ import type { Menu } from '@/models/menu'
 
 const menu = useMenuStore()
 // Active tab state
-const activeTab = ref('orders')
+const activeTab = ref('menu')
 
 // Dialog state
 const isAddItemOpen = ref(false)

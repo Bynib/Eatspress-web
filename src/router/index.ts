@@ -42,8 +42,8 @@ const router = createRouter({
       component: AccountSettings,
     },
     {
-      path: '/admin',
-      name: 'admin',
+      path: '/admin/orders',
+      name: 'admin-orders',
       component: AdminOrders,
     },
     {

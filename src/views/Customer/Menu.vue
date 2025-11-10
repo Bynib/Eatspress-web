@@ -8,6 +8,7 @@ const menu = useMenuStore()
 
 onBeforeMount(async () => {
   await menu.getAll()
+  console.log("menus", menu.items)
 })
 
 const activeCategory = ref('All')
@@ -72,7 +73,7 @@ const Categories = [
     <div
       class="w-3/4 sm:w-9/10 md:w-9/10 lg:w-3/4 xl:w-3/4 2xl:w-full flex flex-wrap gap-5 justify-center items-center"
     >
-      <div v-for="category in Categories" key="category.id">
+      <div v-for="category in Categories" :key="category.id">
         <Button
           :class="[
             'transition-all duration-300 ease-in-out cursor-pointer flex gap-2 rounded-full py-2 px-5',
@@ -92,7 +93,7 @@ const Categories = [
     <div
       class="mb-10 w-9/10 sm:w-9/10 md:w-4/5 lg:w-4/5 xl:w-4/5 2xl:w-5/9 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-center items-center"
     >
-      <CardView v-for="item in menu.items" :key="item.item_Id" :item="item" />
+      <CardView v-for="item in menu.items.filter(r => !r.isDeleted)" :key="item.item_Id" :item="item" />
     </div>
   </div>
 </template>

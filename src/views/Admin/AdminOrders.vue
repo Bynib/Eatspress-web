@@ -7,25 +7,24 @@ import TabToggle from '@/components/TabToggle.vue'
 import OrderCard from '@/components/OrderCard.vue'
 import { useOrderStore } from '@/stores/order'
 import { useUserStore } from '@/stores/user'
-
+import { useMenuStore } from '@/stores/menu'
 
 // Router
 const router = useRouter()
 
 const order = useOrderStore()
 const users = useUserStore()
+const menu = useMenuStore()
 // State
 const activeTab = ref('orders')
 
+onBeforeMount(async () => {
+  await menu.getAll()
+  await users.fetchAll()
+  await order.getAll()
 
-onBeforeMount(async () =>{
-  await users.fetchAll();
-  await order.getAll();
-
-  console.log('orders',order.orders)
+  console.log('orders', order.orders)
 })
-
-
 
 // Methods
 const handleTabChange = (tab: string) => {
@@ -37,7 +36,7 @@ const handleTabChange = (tab: string) => {
   }
 }
 
-const updateOrderStatus = async(orderId: number, newStatus: number) => {
+const updateOrderStatus = async (orderId: number, newStatus: number) => {
   await order.updateStatus(orderId, newStatus)
 }
 

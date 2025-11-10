@@ -3,9 +3,10 @@ import { Utensils, Mail, Lock, Eye, EyeClosed, ChevronLeft, User, Phone } from '
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { googleTokenLogin } from 'vue3-google-login'
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -47,6 +48,20 @@ const handleSignup = async () => {
   console.log('Form submitted:', form)
   await auth.register(form)
 }
+async function google() {
+  const object = await googleTokenLogin()
+  auth.continueWithGoogle(object)
+}
+
+onBeforeMount(() => {
+  form.email = localStorage.getItem('email') || ''
+  form.firstname = localStorage.getItem('firstname') || ''
+  form.lastname = localStorage.getItem('lastname') || ''
+
+  localStorage.removeItem('email')
+  localStorage.removeItem('firstname')
+  localStorage.removeItem('lastname')
+})
 </script>
 
 <template>
@@ -189,6 +204,8 @@ const handleSignup = async () => {
       </div>
 
       <Button
+        @click="google"
+        :disabled="auth.isLoading"
         class="rounded-lg w-full p-5 py-6 flex bg-white hover:bg-white mb-5 cursor-pointer shadow-[0px_0px_12px_#ffffff,6px_6px_12px_#BEBEBE] justify-center items-center gap-5"
       >
         <span class="icon-[flat-color-icons--google] size-8"></span>

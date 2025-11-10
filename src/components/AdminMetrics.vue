@@ -3,9 +3,8 @@ import { computed } from 'vue'
 import { PhilippinePeso, Clock, CheckCircle, Menu as Menu2 } from 'lucide-vue-next'
 import MetricCard from '@/components/MetricCard.vue'
 import type { Menu } from '@/models/menu'
-import type { Order } from '@/models/order';
-import { useMenuStore } from '@/stores/menu';
-
+import type { Order } from '@/models/order'
+import { useMenuStore } from '@/stores/menu'
 
 const props = defineProps<{
   orders?: Order[]
@@ -16,10 +15,15 @@ const menu = useMenuStore()
 // Computed properties for orders metrics
 const ordersTotalRevenue = computed(() => {
   if (!props.orders) return 0
-  return props.orders.reduce((sum, order) => sum + order.details.reduce((sum, item) => {
-    const menuItem = menu.items.find((i) => i.item_Id === item.item_Id)
-    return sum + item.quantity * (menuItem?.price ?? 0)
-  }, 9), 0)
+  return props.orders.reduce(
+    (sum, order) =>
+      sum +
+      order.details.reduce((sum, item) => {
+        const menuItem = menu.items.find((i) => i.item_Id === item.item_Id)
+        return sum + item.quantity * (menuItem?.price ?? 0)
+      }, 9),
+    0,
+  )
 })
 
 const ordersPendingOrders = computed(() => {
@@ -45,7 +49,9 @@ const ordersMenuItems = computed(() => {
 // Computed properties for menu metrics
 const menuTotalRevenue = computed(() => {
   if (!props.menuItems) return 0
-  return props.menuItems.reduce((sum, item) => sum + item.price, 0)
+  return props.menuItems
+    .filter((item) => !item.isDeleted)
+    .reduce((sum, item) => sum + item.price, 0)
 })
 
 const menuPendingOrders = computed(() => {

@@ -1,5 +1,6 @@
 <template>
   <button
+    :disabled="!isNext"
     @click="$emit('click')"
     :class="buttonClasses"
     class="relative rounded-full shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center gap-2 px-3 py-1.5 transition-all duration-200"
@@ -12,26 +13,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Clock, ChefHat, CheckCircle, Truck } from 'lucide-vue-next'
+import { computed, type Component } from 'vue'
 
 const props = defineProps<{
-  status: 'pending' | 'preparing' | 'ready' | 'delivered'
+  status: string
+  icon: Component
   isActive: boolean
+  isNext: boolean
 }>()
 
 defineEmits<{
   click: []
 }>()
 
-const statusIcons = {
-  pending: Clock,
-  preparing: ChefHat,
-  ready: CheckCircle,
-  delivered: Truck
-}
-
-const icon = computed(() => statusIcons[props.status])
 
 const buttonClasses = computed(() => {
   if (props.isActive) {
@@ -66,7 +60,7 @@ const iconClass = computed(() => {
         return 'text-gray-600'
     }
   }
-  return 'text-gray-600'
+  return props.isNext ? 'text-gray-600' : 'text-gray-400'
 })
 
 const textClass = computed(() => {
@@ -84,6 +78,7 @@ const textClass = computed(() => {
         return 'text-gray-600'
     }
   }
-  return 'text-gray-600'
+
+  return props.isNext ? 'text-gray-600' : 'text-gray-400'
 })
 </script>

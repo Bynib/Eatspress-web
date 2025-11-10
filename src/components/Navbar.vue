@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -180,7 +181,7 @@ const cart = useCartStore()
             <CircleUserRound />
             <p>Account</p>
           </DropdownMenuItem>
-          <DropdownMenuItem class="cursor-pointer">
+          <DropdownMenuItem class="cursor-pointer" @click="useAuthStore().logout()">
             <LogOut />
             <p>Logout</p>
           </DropdownMenuItem>

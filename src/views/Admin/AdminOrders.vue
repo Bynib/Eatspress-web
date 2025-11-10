@@ -1,104 +1,31 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import AdminHeader from '@/components/AdminHeader.vue'
 import AdminMetrics from '@/components/AdminMetrics.vue'
 import TabToggle from '@/components/TabToggle.vue'
 import OrderCard from '@/components/OrderCard.vue'
+import { useOrderStore } from '@/stores/order'
+import { useUserStore } from '@/stores/user'
 
-// Types
-type OrderStatus = 'pending' | 'preparing' | 'ready' | 'delivered'
-
-interface OrderItem {
-  name: string
-  quantity: number
-  price: number
-}
-
-interface Order {
-  id: string
-  customerName: string
-  email: string
-  date: string
-  time: string
-  items: OrderItem[]
-  specialInstructions: string
-  status: OrderStatus
-  totalPrice: number
-}
 
 // Router
 const router = useRouter()
 
+const order = useOrderStore()
+const users = useUserStore()
 // State
 const activeTab = ref('orders')
-const searchQuery = ref('')
-const statusFilter = ref('')
 
-// Sample data
-const orders = ref<Order[]>([
-  {
-    id: '1',
-    customerName: 'Rimar Navaja',
-    email: 'rimar12311231@gmail.com',
-    date: new Date().toDateString(), // Today's date
-    time: '7:02 AM',
-    items: [{ name: 'Kaldereta', quantity: 1, price: 300 }],
-    specialInstructions: '23 12312312312312',
-    status: 'pending',
-    totalPrice: 300,
-  },
-  {
-    id: '2',
-    customerName: 'Maria Santos',
-    email: 'maria.santos@gmail.com',
-    date: new Date().toDateString(), // Today's date
-    time: '8:15 AM',
-    items: [
-      { name: 'Pork Humba', quantity: 1, price: 240 },
-      { name: 'Kaldereta', quantity: 1, price: 300 },
-    ],
-    specialInstructions: '',
-    status: 'ready',
-    totalPrice: 540,
-  },
-  {
-    id: '3',
-    customerName: 'Juan Dela Cruz',
-    email: 'juan.delacruz@gmail.com',
-    date: new Date(Date.now() - 86400000).toDateString(), // Yesterday
-    time: '6:30 PM',
-    items: [{ name: 'Chicken Adobo', quantity: 2, price: 280 }],
-    specialInstructions: 'Extra spicy',
-    status: 'delivered',
-    totalPrice: 560,
-  },
-  {
-    id: '4',
-    customerName: 'Ana Garcia',
-    email: 'ana.garcia@gmail.com',
-    date: new Date().toDateString(), // Today's date
-    time: '12:45 PM',
-    items: [{ name: 'Sinigang', quantity: 1, price: 250 }],
-    specialInstructions: 'Less sour',
-    status: 'preparing',
-    totalPrice: 250,
-  },
-])
 
-// Computed properties
-const filteredOrders = computed(() => {
-  return orders.value.filter((order) => {
-    const matchesSearch =
-      !searchQuery.value ||
-      order.customerName.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      order.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+onBeforeMount(async () =>{
+  await users.fetchAll();
+  await order.getAll();
 
-    const matchesStatus = !statusFilter.value || order.status === statusFilter.value
-
-    return matchesSearch && matchesStatus
-  })
+  console.log('orders',order.orders)
 })
+
+
 
 // Methods
 const handleTabChange = (tab: string) => {
@@ -110,11 +37,8 @@ const handleTabChange = (tab: string) => {
   }
 }
 
-const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-  const order = orders.value.find((o) => o.id === orderId)
-  if (order) {
-    order.status = newStatus
-  }
+const updateOrderStatus = async(orderId: number, newStatus: number) => {
+  await order.updateStatus(orderId, newStatus)
 }
 
 onMounted(() => {
@@ -137,7 +61,7 @@ onMounted(() => {
         </div>
 
         <!-- Metrics Cards -->
-        <AdminMetrics :orders="orders" type="orders" />
+        <AdminMetrics :orders="order.orders" type="orders" />
 
         <!-- Tab Toggle -->
         <div class="flex justify-center mb-8">
@@ -145,10 +69,10 @@ onMounted(() => {
         </div>
 
         <!-- Orders List -->
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-6 pb-10">
           <OrderCard
-            v-for="order in filteredOrders"
-            :key="order.id"
+            v-for="order in order.orders"
+            :key="order.order_Id"
             :order="order"
             @status-change="updateOrderStatus"
           />

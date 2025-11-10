@@ -3,51 +3,41 @@ import { computed } from 'vue'
 import { PhilippinePeso, Clock, CheckCircle, Menu as Menu2 } from 'lucide-vue-next'
 import MetricCard from '@/components/MetricCard.vue'
 import type { Menu } from '@/models/menu'
+import type { Order } from '@/models/order';
+import { useMenuStore } from '@/stores/menu';
 
-interface Order {
-  id: string
-  customerName: string
-  email: string
-  date: string
-  time: string
-  items: Array<{
-    name: string
-    quantity: number
-    price: number
-  }>
-  specialInstructions: string
-  status: 'pending' | 'preparing' | 'ready' | 'delivered'
-  totalPrice: number
-}
 
 const props = defineProps<{
   orders?: Order[]
   menuItems?: Menu[]
   type: 'orders' | 'menu'
 }>()
-
+const menu = useMenuStore()
 // Computed properties for orders metrics
 const ordersTotalRevenue = computed(() => {
   if (!props.orders) return 0
-  return props.orders.reduce((sum, order) => sum + order.totalPrice, 0)
+  return props.orders.reduce((sum, order) => sum + order.details.reduce((sum, item) => {
+    const menuItem = menu.items.find((i) => i.item_Id === item.item_Id)
+    return sum + item.quantity * (menuItem?.price ?? 0)
+  }, 9), 0)
 })
 
 const ordersPendingOrders = computed(() => {
   if (!props.orders) return 0
-  return props.orders.filter((order) => order.status === 'pending').length
+  return props.orders.filter((order) => order.status_Id === 1).length
 })
 
 const ordersTodaysOrders = computed(() => {
   if (!props.orders) return 0
   const today = new Date().toDateString()
-  return props.orders.filter((order) => order.date === today).length
+  return props.orders.filter((order) => new Date(order.created_At!).toDateString() === today).length
 })
 
 const ordersMenuItems = computed(() => {
   if (!props.orders) return 0
   const uniqueItems = new Set()
   props.orders.forEach((order) => {
-    order.items.forEach((item) => uniqueItems.add(item.name))
+    order.details.forEach((item) => uniqueItems.add(item.item_Id))
   })
   return uniqueItems.size
 })

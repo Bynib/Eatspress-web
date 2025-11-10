@@ -132,7 +132,7 @@ onMounted(() => {
         <div class="flex justify-center">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
             <MenuCard
-              v-for="item in menu.items"
+              v-for="item in menu.items.filter((r) => !r.isDeleted)"
               :key="item.item_Id"
               :menu-item="item"
               @edit="handleEditItem"

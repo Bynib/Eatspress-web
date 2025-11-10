@@ -4,9 +4,11 @@ import { onBeforeMount, ref } from 'vue'
 import { Clock, ChefHat, CircleCheckBig, Truck } from 'lucide-vue-next'
 import { useOrderStore } from '@/stores/order'
 import { useAuthStore } from '@/stores/auth'
+import { useMenuStore } from '@/stores/menu'
 
 const activeFilter = ref('All')
 const order = useOrderStore()
+const menu = useMenuStore()
 const changeFilter = (filterOrder: string) => {
   activeFilter.value = filterOrder
 }
@@ -41,7 +43,10 @@ const filters = [
 onBeforeMount(async () => {
   const { user } = useAuthStore()
   await order.getByUser(user.user_Id)
+
+  console.log("orders",order.orders)
   await menu.getAll()
+  console.log("menu",menu.items)
 })
 </script>
 
@@ -60,7 +65,7 @@ onBeforeMount(async () => {
     <div
       class="w-3/4 sm:w-9/10 md:w-9/10 lg:w-full xl:w-full 2xl:w-full flex flex-wrap gap-5 justify-center items-center"
     >
-      <div v-for="filter in filters" key="filter.id">
+      <div v-for="filter in filters" :key="filter.id">
         <Button
           :class="[
             'transition-all duration-300 ease-in-out cursor-pointer flex gap-2 rounded-full py-2 px-5',

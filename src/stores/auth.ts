@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode'
 import router from '@/router'
 import { useSonnerStore } from './sonner'
 import { useFetch } from '@/plugins/api' // <-- your custom fetch wrapper
+import type { CallbackTypes } from 'vue3-google-login'
 export const useAuthStore = defineStore('auth', () => {
   const sonner = useSonnerStore()
   const URL = import.meta.env.VITE_BASE_URL ?? 'http://localhost:5135/api'
@@ -42,8 +43,6 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = data.token
       user.value = data.user
 
-      //   await notification.fetchNotifications(user.value.userId)
-
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
 
@@ -61,57 +60,61 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  //   const continueWithGoogle = async(object : CallbackTypes.TokenPopupResponse) =>{
-  //     isLoading.value = true
-  //     try {
-  //       const result = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-  //         headers: {
-  //           Authorization: `Bearer ${object.access_token}`
-  //         }
-  //       })
-  //       const fetchedUser = await result.json();
+  const continueWithGoogle = async (object: CallbackTypes.TokenPopupResponse) => {
+    isLoading.value = true
+    try {
+      const result = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${object.access_token}`,
+        },
+      })
+      const fetchedUser = await result.json()
 
-  //       const credentials = {
-  //         email: fetchedUser.email,
-  //         username: fetchedUser.name
-  //       }
+      console.log('fetchedUser', fetchedUser)
+      const credentials = {
+        email: fetchedUser.email,
+        password: 'password',
+      }
 
-  //       const res = await useFetch(URL + "/accounts/google", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(credentials),
-  //         credentials: "include",
-  //       })
-  //       const data = await res.json()
-  //       if (!res.ok) return sonner.error(data.message)
-  //       console.log("user before", user.value)
-  //       sonner.success(data.message)
-  //       token.value = data.token
-  //       user.value = data.user
+      const res = await useFetch(URL + '/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        credentials: 'include',
+      })
+      const data = await res.json()
+      if (data.isNotSignedUp) {
+        localStorage.setItem('email', fetchedUser.email || '')
+        localStorage.setItem('firstname', fetchedUser.given_name || '')
+        localStorage.setItem('lastname', fetchedUser.family_name || '')
+        sonner.message(`You're Almost There`, data.message)
+        router.push('/register')
+        return
+      }
+      sonner.success(data.message)
+      token.value = data.token
+      user.value = data.user
 
-  //       await notification.fetchNotifications(user.value.userId)
-  //       console.log("user after", user.value)
-  //       localStorage.setItem("token", data.token)
-  //       localStorage.setItem("user", JSON.stringify(data.user))
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user))
 
-  //       const redirectPath = sessionStorage.getItem("redirectAfterLogin")
-  //       sessionStorage.removeItem("redirectAfterLogin")
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin')
+      sessionStorage.removeItem('redirectAfterLogin')
 
-  //       // check if admin
-  //       if (redirectPath) {
-  //         router.push(redirectPath)
-  //       } else if (isAdmin.value) {
-  //         router.push("/admin")
-  //       } else {
-  //         router.push("/dashboard")
-  //       }
-  //     } catch (err: any) {
-  //       sonner.error(err.message)
-  //     } finally {
-  //       isLoading.value = false
-  //       isFromLogin.value =true
-  //     }
-  //   }
+      // check if admin
+      if (redirectPath) {
+        router.push(redirectPath)
+      } else if (isAdmin.value) {
+        router.push('/admin/menu')
+      } else {
+        router.push('/menu')
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) sonner.error(err.message)
+    } finally {
+      isLoading.value = false
+    }
+  }
 
   const login = async (credentials: { email: string; password: string }) => {
     isLoading.value = true
@@ -163,7 +166,6 @@ export const useAuthStore = defineStore('auth', () => {
       const data = await res.json()
       if (!res.ok) return sonner.error(data.message)
 
-      console.log('data', data)
       sonner.success(data.message)
       token.value = null
       user.value = null
@@ -192,7 +194,7 @@ export const useAuthStore = defineStore('auth', () => {
       const res = await useFetch(`${URL}/user/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({...updates, user_Id: userInfo.value.user_Id}),
+        body: JSON.stringify({ ...updates, user_Id: userInfo.value.user_Id }),
         credentials: 'include',
       })
       const data = await res.json()
@@ -257,7 +259,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     handleTokenExpiry,
     makeAuthenticatedRequest,
-    //   continueWithGoogle,
+    continueWithGoogle,
     setToken,
     update,
   }

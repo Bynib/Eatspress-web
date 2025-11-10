@@ -2,7 +2,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useSonnerStore } from './sonner'
-import { useAuthStore } from './auth'
 import { useFetch } from '@/plugins/api'
 import type { Menu } from '@/models/menu'
 
@@ -119,7 +118,7 @@ export const useMenuStore = defineStore('menu', () => {
       const data = await res.json()
       if (!res.ok) return sonner.error(data.message)
       sonner.success(data.message)
-      items.value = items.value.filter((i) => i.item_Id !== id)
+      items.value = items.value.map(r => r.item_Id === id ? {...r, isDeleted: true} : r)
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to delete food item'
       sonner.error(msg)

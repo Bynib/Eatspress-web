@@ -6,6 +6,7 @@ import { Separator } from '@/components/ui/separator'
 import { ref } from 'vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
+import { googleTokenLogin } from 'vue3-google-login'
 
 const auth = useAuthStore()
 const showPassword = ref(false)
@@ -20,6 +21,11 @@ const togglePassword = () => {
 }
 const Navigate = (string: string) => {
   router.push(string)
+}
+
+async function google() {
+  const object = await googleTokenLogin()
+  auth.continueWithGoogle(object)
 }
 </script>
 
@@ -64,7 +70,7 @@ const Navigate = (string: string) => {
           <EyeClosed v-else @click="togglePassword" class="text-[#94A3B8] cursor-pointer" />
         </div>
       </div>
-      <p class="w-full flex justify-end text-sm font-bold cursor-pointer">Forgot password?</p>
+      <p class="w-full flex justify-end text-sm font-bold cursor-pointer"></p>
 
       <Button
         :disabled="auth.isLoading"
@@ -84,6 +90,8 @@ const Navigate = (string: string) => {
         <p class="bg-[#E5E7EB] text-[#64748B] px-3 text-center relative -translate-y-1/2">OR</p>
       </div>
       <Button
+        @click="google"
+        :disabled="auth.isLoading"
         class="rounded-lg w-full p-5 py-6 flex bg-white hover:bg-white mb-5 cursor-pointer shadow-[0px_0px_12px_#ffffff,6px_6px_12px_#BEBEBE] justify-center items-center gap-5"
       >
         <span class="icon-[flat-color-icons--google] size-8"></span>

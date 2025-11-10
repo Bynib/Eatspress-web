@@ -6,4 +6,5 @@ export interface Menu {
   category_Id: number
   price: number
   image?: string | File | null
+  isDeleted?: boolean
 }

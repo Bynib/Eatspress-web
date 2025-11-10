@@ -52,7 +52,7 @@ export const useOrderStore = defineStore('order', () => {
       })
       const data = await res.json()
       if (!res.ok) return sonner.error(data.message)
-      selectedOrder.value = data
+        selectedOrder.value = data
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch order'
       sonner.error(msg)
@@ -70,6 +70,7 @@ export const useOrderStore = defineStore('order', () => {
       })
       const data = await res.json()
       if (!res.ok) return sonner.error(data.message)
+      console.log('data',data)
       orders.value = data
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch user orders'

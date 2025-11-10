@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cart'
 
 const route = useRoute()
 const router = useRouter()
@@ -30,6 +31,8 @@ console.log(route.path)
 const changeTab = (tab: string) => {
   router.push(tab)
 }
+
+const cart = useCartStore()
 </script>
 
 <template>
@@ -59,7 +62,12 @@ const changeTab = (tab: string) => {
                 <p>Menu</p>
               </span>
               <span v-if="route.path === '/cart'" class="flex gap-2 items-center pl-8">
-                <ShoppingCart />
+                <div class="relative">
+                  <ShoppingCart />
+                  <span class="absolute top-0 bg-red-400 text-white rounded-full">{{
+                    cart.items.length
+                  }}</span>
+                </div>
                 <p>Cart</p>
               </span>
               <span v-if="route.path === '/orders'" class="flex gap-2 items-center pl-8">
@@ -76,7 +84,12 @@ const changeTab = (tab: string) => {
             <p :class="route.path === '/menu' ? 'text-[#FF6B6B]' : ''">Menu</p>
           </DropdownMenuItem>
           <DropdownMenuItem @click="changeTab('cart')">
-            <ShoppingCart :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''" />
+            <div class="relative">
+              <ShoppingCart :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''" />
+              <span class="absolute top-0 bg-red-400 text-white rounded-full">{{
+                cart.items.length
+              }}</span>
+            </div>
             <p :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''">Cart</p>
           </DropdownMenuItem>
           <DropdownMenuItem @click="changeTab('orders')">
@@ -111,10 +124,17 @@ const changeTab = (tab: string) => {
         class="flex h-full items-center gap-2 cursor-pointer group relative"
         @click="changeTab('cart')"
       >
-        <ShoppingCart
-          class="group-hover:text-[#FF6B6B]"
-          :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''"
-        />
+        <div class="relative">
+          <ShoppingCart
+            class="group-hover:text-[#FF6B6B]"
+            :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''"
+          />
+          <span
+            v-if="cart.items.length"
+            class="absolute -top-1 left-4 bg-red-400 text-white rounded-full text-xs size-4 flex items-center justify-center"
+            >{{ cart.items.length }}</span
+          >
+        </div>
         <p
           class="group-hover:text-[#FF6B6B]"
           :class="route.path === '/cart' ? 'text-[#FF6B6B]' : ''"

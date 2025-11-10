@@ -9,7 +9,15 @@ import {
 } from '@/components/ui/card'
 import { Clock, ChefHat, CircleCheckBig, Truck } from 'lucide-vue-next'
 import { Separator } from '@/components/ui/separator'
+import type { Order } from '@/models/order'
+import { computed, onBeforeMount } from 'vue'
+import { useMenuStore } from '@/stores/menu'
 
+interface Props {
+  item: Order
+}
+const props = defineProps<Props>()
+const menu = useMenuStore()
 const statuses = [
   {
     id: 1,
@@ -32,6 +40,14 @@ const statuses = [
     icon: Truck,
   },
 ]
+const total = computed(() => {
+  //
+  return props.item.details.reduce((sum, item) => {
+    const menuItem = menu.items.find((i) => i.item_Id === item.item_Id)
+    console.log('menuItem', menuItem)
+    return sum + item.quantity * (menuItem?.price ?? 0)
+  }, 9)
+})
 </script>
 
 <template>
@@ -39,10 +55,10 @@ const statuses = [
     <CardHeader>
       <CardTitle class="flex gap-2 justify-between">
         <div class="flex gap-2 items-center">
-          <component :is="statuses[0].icon" class="size-5" />
-          <p class="font-semibold">Status</p>
+          <component :is="statuses[item.status_Id].icon" class="size-5" />
+          <p class="font-semibold">{{ statuses[item.status_Id].name }}</p>
         </div>
-        <p class="font-bold">₱300</p>
+        <p class="font-bold">₱{{ total }}</p>
       </CardTitle>
       <CardDescription>Order placed on Agust 23, 2025 7:02 AM</CardDescription>
     </CardHeader>
@@ -66,16 +82,19 @@ const statuses = [
         <p>Order Items:</p>
 
         <!-- to be looped for items -->
-        <div class="w-full flex gap-3 justify-between">
-          <p>Kaldereta x 1</p>
-          <p>₱300</p>
+        <div v-for="item in item.details" class="w-full flex gap-3 justify-between">
+          <p>
+            {{ menu.items.find((i) => i.item_Id === item.item_Id)?.name }} x {{ item.quantity }}
+          </p>
+          <p>₱{{ item.quantity * menu.items.find((i) => i.item_Id === item.item_Id)?.price }}</p>
         </div>
 
         <p class="font-semibold">Special Instructions:</p>
         <Textarea
           disabled
+          :value="item.instruction"
           class="rounded-md bg-[#F8FAFC] p-3 w-full text-sm resize-none border-none focus:border-none focus:outline-none focus-visible:ring-0 shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
-          placeholder="Make slices smaller."
+          placeholder="No special instructions."
         ></Textarea>
       </div>
     </CardContent>

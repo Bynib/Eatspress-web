@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth'
 import { Utensils, SquareMenu, Logs, User, LogOut } from 'lucide-vue-next'
 
 defineProps<{
@@ -8,6 +9,8 @@ defineProps<{
 defineEmits<{
   'tab-change': [tab: string]
 }>()
+
+const auth = useAuthStore()
 </script>
 <template>
   <div
@@ -47,7 +50,8 @@ defineEmits<{
     <div class="flex items-center gap-2.5">
       <span class="text-sm font-semibold text-gray-600">Admin</span>
       <div
-        class="w-8 h-8 bg-gray-200 rounded-full shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center justify-center"
+        @click="async () => await auth.logout()"
+        class="cursor-pointerw-8 h-8 bg-gray-200 rounded-full shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] flex items-center justify-center"
       >
         <LogOut class="w-4 h-4 text-gray-600" />
       </div>

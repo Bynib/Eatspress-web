@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import OrdersView from '@/components/OrdersView.vue'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { Clock, ChefHat, CircleCheckBig, Truck } from 'lucide-vue-next'
+import { useOrderStore } from '@/stores/order'
+import { useAuthStore } from '@/stores/auth'
 
 const activeFilter = ref('All')
-
+const order = useOrderStore()
 const changeFilter = (filterOrder: string) => {
   activeFilter.value = filterOrder
 }
@@ -35,6 +37,12 @@ const filters = [
     icon: Truck,
   },
 ]
+
+onBeforeMount(async () => {
+  const { user } = useAuthStore()
+  await order.getByUser(user.user_Id)
+  await menu.getAll()
+})
 </script>
 
 <template>
@@ -70,7 +78,7 @@ const filters = [
     <div
       class="mb-10 w-9/10 sm:w-9/10 md:w-4/5 lg:w-3/5 xl:w-3/5 2xl:w-4/9 grid grid-cols-1 gap-5 justify-center items-center"
     >
-      <OrdersView v-for="i in 6" :key="i" />
+      <OrdersView v-for="order in order.orders" :key="order.order_Id" :item="order" />
     </div>
   </div>
 </template>

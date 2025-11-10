@@ -50,7 +50,7 @@ const handleSignup = async () => {
 </script>
 
 <template>
-  <div class="w-screen h-screen flex flex-col lg:justify-center items-center">
+  <div class="w-screen min-h-screen py-10 flex flex-col lg:justify-center items-center">
     <div
       class="w-9/10 sm:w-9/10 md:w-3/4 lg:w-1/2 xl:w-1/3 2xl:w-1/4 mt-10 sm:mt-10 lg:mt-0 rounded-2xl p-10 shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE] flex flex-col justify-center items-center gap-5 bg-[#E5E7EB]"
     >
@@ -66,31 +66,33 @@ const handleSignup = async () => {
       <p class="text-2xl font-extrabold">Create your account</p>
 
       <div class="w-full flex flex-col gap-5">
-        <div class="flex flex-col gap-2">
-          <p class="font-semibold">First Name</p>
-          <div
-            class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
-          >
-            <User class="text-[#94A3B8]" />
-            <Input
-              v-model="form.firstname"
-              placeholder="First name"
-              class="w-full text-sm shadow-none border-none focus:border-none focus-visible:ring-0"
-            />
+        <div class="flex gap-2">
+          <div class="flex flex-col gap-2">
+            <p class="font-semibold">First Name</p>
+            <div
+              class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
+            >
+              <User class="text-[#94A3B8]" />
+              <Input
+                v-model="form.firstname"
+                placeholder="First name"
+                class="w-full text-sm shadow-none border-none focus:border-none focus-visible:ring-0"
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="flex flex-col gap-2">
-          <p class="font-semibold">Last Name</p>
-          <div
-            class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
-          >
-            <User class="text-[#94A3B8]" />
-            <Input
-              v-model="form.lastname"
-              placeholder="Last name"
-              class="w-full text-sm shadow-none border-none focus:border-none focus-visible:ring-0"
-            />
+          <div class="flex flex-col gap-2">
+            <p class="font-semibold">Last Name</p>
+            <div
+              class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
+            >
+              <User class="text-[#94A3B8]" />
+              <Input
+                v-model="form.lastname"
+                placeholder="Last name"
+                class="w-full text-sm shadow-none border-none focus:border-none focus-visible:ring-0"
+              />
+            </div>
           </div>
         </div>
 

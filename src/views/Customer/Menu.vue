@@ -1,7 +1,14 @@
 <script lang="ts" setup>
 import CardView from '@/components/CardView.vue'
 import { Utensils, Clock, Sandwich, Beef, IceCreamBowl, CupSoda } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
+import { useMenuStore } from '@/stores/menu'
+
+const menu = useMenuStore()
+
+onBeforeMount(async () => {
+  await menu.getAll()
+})
 
 const activeCategory = ref('All')
 
@@ -85,7 +92,7 @@ const Categories = [
     <div
       class="mb-10 w-9/10 sm:w-9/10 md:w-4/5 lg:w-4/5 xl:w-4/5 2xl:w-5/9 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-center items-center"
     >
-      <CardView v-for="i in 6" :key="i" />
+      <CardView v-for="item in menu.items" :key="item.item_Id" :item="item" />
     </div>
   </div>
 </template>

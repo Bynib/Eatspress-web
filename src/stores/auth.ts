@@ -179,31 +179,28 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const update = async (updates: {
-    firstName?: string
-    lastName?: string
+    firstname?: string
+    lastname?: string
     email?: string
-    phoneNumber?: string
+    phone_No?: string
     oldPassword?: string
     newPassword?: string
     confirmPassword?: string
   }) => {
     isLoading.value = true
     try {
-      const res = await useFetch(`${URL}/auth/${userInfo.value.userId}`, {
+      const res = await useFetch(`${URL}/user/update`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify({...updates, user_Id: userInfo.value.user_Id}),
         credentials: 'include',
       })
       const data = await res.json()
       if (!res.ok) return sonner.error(data.message)
 
-      if (res.status === 200) {
-        sonner.message('Profile Info', data.message)
-        return true
-      } else sonner.success(data.message)
+      sonner.success(data.message)
       // update only non-sensitive info in store
-      if (data.user.Email) {
+      if (data.user) {
         user.value = { ...user.value, ...data.user }
         localStorage.setItem('user', JSON.stringify(user.value))
       }

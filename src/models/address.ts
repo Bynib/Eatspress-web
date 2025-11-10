@@ -6,4 +6,5 @@ export interface Address {
   barangay: string
   city: string
   zip_Code: number
+  isDeleted?: boolean
 }

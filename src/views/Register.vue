@@ -7,7 +7,9 @@ import { ref, reactive, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { googleTokenLogin } from 'vue3-google-login'
+import { useSonnerStore } from '@/stores/sonner'
 
+const sonner = useSonnerStore()
 const router = useRouter()
 const auth = useAuthStore()
 const showPassword = ref(false)
@@ -38,11 +40,11 @@ const handleSignup = async () => {
     !form.password ||
     !form.confirmPassword
   ) {
-    alert('All fields are required.')
+    sonner.error('All fields are required.')
     return
   }
   if (form.password !== form.confirmPassword) {
-    alert('Passwords do not match.')
+    sonner.error('Passwords do not match.')
     return
   }
   console.log('Form submitted:', form)
@@ -82,7 +84,7 @@ onBeforeMount(() => {
 
       <div class="w-full flex flex-col gap-5">
         <div class="flex gap-2">
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col w-1/2 gap-2">
             <p class="font-semibold">First Name</p>
             <div
               class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"
@@ -96,7 +98,7 @@ onBeforeMount(() => {
             </div>
           </div>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col w-1/2 gap-2">
             <p class="font-semibold">Last Name</p>
             <div
               class="w-full bg-[#F8FAFC] flex justify-center items-center p-2 rounded-lg shadow-[inset_0px_0px_0px_#ffffff,inset_3px_3px_5px_#BEBEBE]"

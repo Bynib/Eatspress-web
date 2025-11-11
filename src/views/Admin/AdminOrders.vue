@@ -19,8 +19,8 @@ const menu = useMenuStore()
 const activeTab = ref('orders')
 
 onBeforeMount(async () => {
-  await menu.getAll()
   await users.fetchAll()
+  await menu.getAll()
   await order.getAll()
 
   console.log('orders', order.orders)

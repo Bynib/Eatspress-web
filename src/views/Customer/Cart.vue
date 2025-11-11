@@ -43,7 +43,10 @@ const instruction = ref('')
 onMounted(async () => {
   await menu.getAll()
   await cart.getUserCart()
-  if (addressStore.addresses.filter(r => !r.isDeleted).length === 0 && addressStore.isLoading === false) {
+  if (
+    addressStore.addresses.filter((r) => !r.isDeleted).length === 0 &&
+    addressStore.isLoading === false
+  ) {
     await addressStore.getByUser(auth.user?.user_Id ?? 0)
   }
 })
@@ -73,7 +76,8 @@ const adjustQuantity = async (id: number, action: string) => {
 }
 
 const selectAddress = (id: string) => {
-  addressStore.selectedAddress = addressStore.addresses.find((a) => a.address_Id === parseInt(id)) ?? null
+  addressStore.selectedAddress =
+    addressStore.addresses.find((a) => a.address_Id === parseInt(id)) ?? null
 }
 
 const addAddress = async () => {
@@ -118,9 +122,6 @@ const placeOrder = async () => {
         class="text-2xl md:text-4xl font-extrabold bg-gradient-to-r from-rose-500 to-orange-500 bg-clip-text h-11 text-transparent"
       >
         Your Cart
-      </p>
-      <p v-if="cartItems.length !== 0" class="text-center text-sm">
-        {{ cartItems.length }} item<span>{{ cartItems.length > 1 ? 's' : '' }}</span> • ₱300
       </p>
 
       <div
@@ -185,7 +186,7 @@ const placeOrder = async () => {
 
         <!-- No address -->
         <Button
-          v-if="addressStore.addresses.filter(r => !r.isDeleted).length === 0"
+          v-if="addressStore.addresses.filter((r) => !r.isDeleted).length === 0"
           @click="showDialog = true"
           class="w-full border border-rose-500 py-10 text-rose-500 cursor-pointer"
         >
@@ -198,15 +199,18 @@ const placeOrder = async () => {
           <RadioGroup
             :default-value="addressStore.selectedAddress?.address_Id"
             @update:modelValue="selectAddress"
-
           >
             <div
-              v-for="a in addressStore.addresses.filter(r => !r.isDeleted)"
+              v-for="a in addressStore.addresses.filter((r) => !r.isDeleted)"
               :key="a.address_Id"
               class="flex items-center space-x-2 mb-2 px-4 border border-rose-500 rounded-md"
             >
-              <RadioGroupItem :id="a.address_Id!.toString()" class="border border-rose-500" :value="a.address_Id?.toString()" />
-              <Label :for="a.address_Id!.toString()" class="cursor-pointer w-full  py-4">
+              <RadioGroupItem
+                :id="a.address_Id!.toString()"
+                class="border border-rose-500"
+                :value="a.address_Id?.toString()"
+              />
+              <Label :for="a.address_Id!.toString()" class="cursor-pointer w-full py-4">
                 {{ a.unit_No }}, {{ a.street }}, {{ a.barangay }}, {{ a.city }}, {{ a.zip_Code }}
               </Label>
             </div>
@@ -262,8 +266,6 @@ const placeOrder = async () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
 
       <div
         v-if="cartItems.length !== 0"

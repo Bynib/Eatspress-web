@@ -1,52 +1,33 @@
 <script lang="ts" setup>
 import CardView from '@/components/CardView.vue'
 import { Utensils, Clock, Sandwich, Beef, IceCreamBowl, CupSoda } from 'lucide-vue-next'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { useMenuStore } from '@/stores/menu'
 
 const menu = useMenuStore()
+const activeCategory = ref<number>(0) // Default to 'All' (id = 0)
 
 onBeforeMount(async () => {
   await menu.getAll()
-  console.log("menus", menu.items)
 })
 
-const activeCategory = ref('All')
-
-const changeCategory = (category: string) => {
-  activeCategory.value = category
+const changeCategory = (id: number) => {
+  activeCategory.value = id
 }
 
 const Categories = [
-  {
-    id: 1,
-    name: 'All',
-  },
-  {
-    id: 2,
-    name: 'Appetizer',
-    icon: Sandwich,
-    color: '#9333EA',
-  },
-  {
-    id: 3,
-    name: 'Main Course',
-    icon: Beef,
-    color: '#FA0A0A',
-  },
-  {
-    id: 4,
-    name: 'Dessert',
-    icon: IceCreamBowl,
-    color: '#221993',
-  },
-  {
-    id: 5,
-    name: 'Drinks',
-    icon: CupSoda,
-    color: '#F88E25',
-  },
+  { id: 0, name: 'All' },
+  { id: 1, name: 'Appetizer', icon: Sandwich, color: '#9333EA' },
+  { id: 2, name: 'Main Course', icon: Beef, color: '#FA0A0A' },
+  { id: 3, name: 'Dessert', icon: IceCreamBowl, color: '#221993' },
+  { id: 4, name: 'Drinks', icon: CupSoda, color: '#F88E25' },
 ]
+
+// Filtered menu based on category_Id
+const filteredMenu = computed(() => {
+  if (activeCategory.value === 0) return menu.items.filter((item) => !item.isDeleted)
+  return menu.items.filter((item) => item.category_Id === activeCategory.value && !item.isDeleted)
+})
 </script>
 
 <template>
@@ -70,6 +51,7 @@ const Categories = [
         <p class="text-[#4B5563]">15-45 mins delivery</p>
       </div>
     </div>
+
     <div
       class="w-3/4 sm:w-9/10 md:w-9/10 lg:w-3/4 xl:w-3/4 2xl:w-full flex flex-wrap gap-5 justify-center items-center"
     >
@@ -77,23 +59,31 @@ const Categories = [
         <Button
           :class="[
             'transition-all duration-300 ease-in-out cursor-pointer flex gap-2 rounded-full py-2 px-5',
-            activeCategory === category.name
-              ? 'cursor-pointer flex gap-2 rounded-full py-2 px-5 bg-gradient-to-r from-rose-500 to-orange-500 font-bold text-white'
-              : 'cursor-pointer text-[#4B5563] flex gap-2 rounded-full py-2 px-5 shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]',
+            activeCategory === category.id
+              ? 'bg-gradient-to-r from-rose-500 to-orange-500 font-bold text-white'
+              : 'text-[#4B5563] shadow-[-6px_-6px_12px_#ffffff,6px_6px_12px_#BEBEBE]',
           ]"
-          @click="changeCategory(category.name)"
+          @click="changeCategory(category.id)"
         >
           <component
+            v-if="category.icon"
             :is="category.icon"
-            :style="{ color: activeCategory === category.name ? 'white' : category.color }"
-          />{{ category.name }}</Button
-        >
+            :style="{ color: activeCategory === category.id ? 'white' : category.color }"
+          />
+          {{ category.name }}
+        </Button>
       </div>
     </div>
+
     <div
       class="mb-10 w-9/10 sm:w-9/10 md:w-4/5 lg:w-4/5 xl:w-4/5 2xl:w-5/9 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-5 justify-center items-center"
     >
-      <CardView v-for="item in menu.items.filter(r => !r.isDeleted)" :key="item.item_Id" :item="item" />
+      <template v-if="filteredMenu.length > 0">
+        <CardView v-for="item in filteredMenu" :key="item.item_Id" :item="item" />
+      </template>
+      <p v-else class="text-center text-gray-500 mt-5 col-span-full">
+        No menu items available for this category.
+      </p>
     </div>
   </div>
 </template>

@@ -151,6 +151,7 @@ const deleteAddress = (a: Address) => {
 
 const confirmDeleteAddress = async () =>{
   await addressStore.remove(deleteAddr.value?.address_Id ?? 0)
+  showDeleteDialog.value = false
 }
 
 
@@ -391,10 +392,10 @@ onBeforeMount(async () => {
         Are you sure you want to delete this address?
       </div>
       <DialogFooter>
-        <Button :disabled="addressStore.isLoading" class="border border-[#FF6B6B] bg-white bg-gradient-to-b from-rose-500 to-orange-500 bg-clip-text text-transparent">
+        <Button @click="showDeleteDialog = false" :disabled="addressStore.isLoading" class="cursor-pointer border border-[#FF6B6B] bg-white bg-gradient-to-b from-rose-500 to-orange-500 bg-clip-text text-transparent">
           No
         </Button>
-        <Button :disabled="addressStore.isLoading" class="bg-gradient-to-r from-rose-500 to-orange-500 text-white">
+        <Button @click="confirmDeleteAddress" :disabled="addressStore.isLoading" class="cursor-pointer bg-gradient-to-r from-rose-500 to-orange-500 text-white">
           Yes
         </Button>
       </DialogFooter>

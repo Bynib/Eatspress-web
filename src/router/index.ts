@@ -90,7 +90,9 @@ router.beforeEach(async(to, from, next) =>{
       }
     }
   }
-
+  if(to.meta.requiresAdmin || to.meta.requiresUser){
+    if(!auth.isAuthenticated) next('/')
+  }
   if(to.meta.requiresUser){
     if(auth.isAdmin){
       next("/admin/menu")

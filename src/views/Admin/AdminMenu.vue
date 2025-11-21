@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import router from '@/router'
 import AdminHeader from '@/components/AdminHeader.vue'
 import AdminMetrics from '@/components/AdminMetrics.vue'
@@ -9,7 +9,6 @@ import AddItemButton from '@/components/AddItemButton.vue'
 import AddItem from '@/views/Admin/AddItem.vue'
 import EditItem from '@/views/Admin/EditItem.vue'
 import DeleteItemDialog from '@/components/DeleteItemDialog.vue'
-import kalderetaImage from '@/assets/kaldereta.png'
 import { useMenuStore } from '@/stores/menu'
 import type { Menu } from '@/models/menu'
 
@@ -38,11 +37,9 @@ const handleAddItem = () => {
   isAddItemOpen.value = true
 }
 
-const handleAddItemSubmit = async (item: Partial<Menu>) => {
-  // Add new item to menuItems array
-  console.log('item', item)
-  await menu.create(item)
-  console.log('New item added:', item)
+const handleEditCancel = () =>{
+  isEditItemOpen.value = false
+    itemToEdit.value = null
 }
 
 const handleEditItem = (item_Id: number) => {
@@ -54,26 +51,7 @@ const handleEditItem = (item_Id: number) => {
   }
 }
 
-const handleUpdateItem = async (item_Id: number, updatedItem: Partial<Menu>) => {
-  const index = menu.items.findIndex((item) => item.item_Id === item_Id)
-  if (index > -1) {
-    // Update the item with new data
-    menu.items[index] = {
-      ...menu.items[index],
-      name: updatedItem.name!,
-      description: updatedItem.description!,
-      price: updatedItem.price!,
-      category_Id: updatedItem.category_Id!,
-      image: updatedItem.image
-        ? URL.createObjectURL(updatedItem.image! as Blob)
-        : menu.items[index].image,
-    }
-    console.log('Item updated:', item_Id, updatedItem)
-  }
-  await menu.update(item_Id, updatedItem)
-  isEditItemOpen.value = false
-  itemToEdit.value = null
-}
+
 
 const handleDeleteItem = (item_Id: number) => {
   const item = menu.items.find((item) => item.item_Id === item_Id)
@@ -147,7 +125,6 @@ onMounted(() => {
     <AddItem
       :is-open="isAddItemOpen"
       @update:is-open="isAddItemOpen = $event"
-      @add-item="handleAddItemSubmit"
     />
 
     <!-- Edit Item Dialog -->
@@ -155,7 +132,7 @@ onMounted(() => {
       :is-open="isEditItemOpen"
       :menu-item="itemToEdit!"
       @update:is-open="isEditItemOpen = $event"
-      @update-item="handleUpdateItem"
+      @handle-edit-cancel="handleEditCancel"
     />
 
     <!-- Delete Item Dialog -->

@@ -5,8 +5,8 @@ const url = import.meta.env.VITE_BASE_URL
 let refreshPromise: Promise<string | null> | null = null
 
 async function refreshAccessToken(): Promise<string | null> {
-  const auth = useAuthStore()
   const sonner = useSonnerStore()
+  const auth = useAuthStore()
 
   if (isRefreshing && refreshPromise) return refreshPromise
   isRefreshing = true
@@ -40,6 +40,7 @@ async function refreshAccessToken(): Promise<string | null> {
 
 export async function useFetch(input: RequestInfo, init: RequestInit = {}): Promise<Response> {
   const auth = useAuthStore()
+  const sonner = useSonnerStore()
   if (!init.headers) init.headers = {}
   if (auth.token) {
     ;(init.headers as Record<string, string>)['Authorization'] = `Bearer ${auth.token}`
@@ -48,10 +49,15 @@ export async function useFetch(input: RequestInfo, init: RequestInit = {}): Prom
   console.log('init', init)
   let res = await fetch(input, init)
   if (res.status === 401 || res.status === 403) {
-    const newToken = await refreshAccessToken()
-    if (newToken) {
-      ;(init.headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`
-      res = await fetch(input, init)
+    try {
+      const newToken = await refreshAccessToken()
+      if (newToken) {
+        ;(init.headers as Record<string, string>)['Authorization'] = `Bearer ${newToken}`
+        res = await fetch(input, init)
+      }
+    } catch (err : unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      sonner.message(errorMessage, 'Please Log-In again')
     }
   }
 

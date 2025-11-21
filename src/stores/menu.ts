@@ -16,18 +16,14 @@ export const useMenuStore = defineStore('menu', () => {
   const getAll = async () => {
     isLoading.value = true
     try {
-      const res = await useFetch(URL + '/menu', {
-        method: 'GET',
-        credentials: 'include',
-      })
+      const res = await useFetch(URL + '/menu', { method: 'GET', credentials: 'include' })
       const data = await res.json()
-      console.table(data)
-      if (!res.ok) return sonner.error(data.message)
+      if (!res.ok) {
+        return sonner.error(data.message)
+      }
       items.value = data
-      console.log('items', items.value)
-    } catch (err: unknown) {
-      console.error(err)
-      const msg = err instanceof Error ? err.message : 'Failed to fetch menu'
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to fetch menu'
       sonner.error(msg)
     } finally {
       isLoading.value = false
@@ -37,15 +33,14 @@ export const useMenuStore = defineStore('menu', () => {
   const getById = async (id: number) => {
     isLoading.value = true
     try {
-      const res = await useFetch(`${URL}/menu/${id}`, {
-        method: 'GET',
-        credentials: 'include',
-      })
+      const res = await useFetch(`${URL}/menu/${id}`, { method: 'GET', credentials: 'include' })
       const data = await res.json()
-      if (!res.ok) return sonner.error(data.message)
+      if (!res.ok) {
+        return sonner.error(data.message)
+      }
       selectedItem.value = data
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch food item'
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to fetch food item'
       sonner.error(msg)
     } finally {
       isLoading.value = false
@@ -53,79 +48,90 @@ export const useMenuStore = defineStore('menu', () => {
   }
 
   const create = async (pizza: Partial<Menu>) => {
-    isLoading.value = true
-    console.log('pizza', pizza)
-    const formData = new FormData()
-    formData.append('Name', pizza.name!)
-    formData.append('Description', pizza.description!)
-    formData.append('Price', String(pizza.price))
-    formData.append('Category_Id', String(pizza.category_Id))
-    formData.append('Prep_Time', String(pizza.prep_Time))
-    if (pizza.image) formData.append('Image', pizza.image as File)
-    console.log('formData', formData)
-    try {
-      const res = await useFetch(URL + '/menu', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      })
-      const data = await res.json()
-      if (!res.ok) return sonner.error(data.message)
-      sonner.success('Food item created')
-      await getAll()
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to create food item'
-      sonner.error(msg)
-    } finally {
-      isLoading.value = false
-    }
-  }
+  isLoading.value = true
+  try {
+    const form = new FormData()
+    form.append('Name', pizza.name!)
+    form.append('Description', pizza.description!)
+    form.append('Price', String(pizza.price))
+    form.append('Category_Id', String(pizza.category_Id))
+    form.append('Prep_Time', String(pizza.prep_Time))
+    if (pizza.image) form.append('Image', pizza.image as File)
 
-  const update = async (id: number, pizza: Partial<Menu>) => {
-    const formData = new FormData()
-    formData.append('Name', String(pizza.name))
-    formData.append('Description', String(pizza.description))
-    formData.append('Price', String(pizza.price))
-    formData.append('Category_Id', String(pizza.category_Id))
-    formData.append('Prep_Time', String(pizza.prep_Time))
-    if (pizza.image) formData.append('Image', pizza.image as File)
-    isLoading.value = true
-    try {
-      const res = await useFetch(`${URL}/menu/${id}`, {
-        method: 'PUT',
-        body: formData,
-        credentials: 'include',
-      })
-      const data = await res.json()
-      if (!res.ok) return sonner.error(data.message)
-      sonner.success('Food item updated')
-      await getAll()
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to update food item'
-      sonner.error(msg)
-    } finally {
-      isLoading.value = false
-    }
-  }
+    const res = await useFetch(URL + '/menu', { method: 'POST', body: form, credentials: 'include' })
+    const data = await res.json()
 
-  const remove = async (id: number) => {
-    isLoading.value = true
-    try {
-      const res = await useFetch(`${URL}/menu/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
-      const data = await res.json()
-      if (!res.ok) return sonner.error(data.message)
-      sonner.success(data.message)
-      items.value = items.value.map(r => r.item_Id === id ? {...r, isDeleted: true} : r)
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to delete food item'
-      sonner.error(msg)
-    } finally {
-      isLoading.value = false
+    if (!res.ok) {
+      sonner.error(data.message ?? 'Failed to create food item')
+      return false
     }
+
+    sonner.success('Food item created')
+    await getAll()
+    return true
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Failed to create food item'
+    sonner.error(msg)
+    return false
+  } finally {
+    isLoading.value = false
   }
+}
+
+const update = async (id: number, pizza: Partial<Menu>) => {
+  isLoading.value = true
+  try {
+    const form = new FormData()
+    form.append('Name', String(pizza.name))
+    form.append('Description', String(pizza.description))
+    form.append('Price', String(pizza.price))
+    form.append('Category_Id', String(pizza.category_Id))
+    form.append('Prep_Time', String(pizza.prep_Time))
+    if (pizza.image) form.append('Image', pizza.image as File)
+
+    const res = await useFetch(`${URL}/menu/${id}`, { method: 'PUT', body: form, credentials: 'include' })
+    const data = await res.json()
+
+    if (!res.ok) {
+      sonner.error(data.message ?? 'Failed to update food item' )
+      return false
+    }
+
+    sonner.success('Food item updated')
+    await getAll()
+    return true
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Failed to update food item'
+    sonner.error(msg)
+    return false
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const remove = async (id: number) => {
+  isLoading.value = true
+  try {
+    const res = await useFetch(`${URL}/menu/${id}`, { method: 'DELETE', credentials: 'include' })
+    const data = await res.json()
+
+    if (!res.ok) {
+      sonner.error(data.message)
+      return false
+    }
+
+    sonner.success(data.message)
+    items.value = items.value.map(r => r.item_Id === id ? { ...r, isDeleted: true } : r)
+    return true
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : 'Failed to delete food item'
+    sonner.error(msg)
+    return false
+  } finally {
+    isLoading.value = false
+  }
+}
+
 
   return {
     items,
@@ -135,6 +141,7 @@ export const useMenuStore = defineStore('menu', () => {
     getById,
     create,
     update,
-    remove,
+    remove
   }
 })
+

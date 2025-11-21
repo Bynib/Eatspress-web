@@ -1,22 +1,18 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { Plus } from 'lucide-vue-next'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import type { Menu } from '@/models/menu'
+import { useMenuStore } from '@/stores/menu'
+import { Loader2, Plus } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
 
-const props = defineProps<{
+defineProps<{
   isOpen: boolean
 }>()
-
+const {create, isLoading} = useMenuStore()
 const emit = defineEmits<{
   'update:isOpen': [value: boolean]
   'add-item': [item: Partial<Menu>]
@@ -34,9 +30,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 const selectedFile = ref<File | null>(null)
 
-const handleChooseFile = () => {
-  fileInput.value?.click()
-}
+
 const handleOpenChange = (open: boolean) => {
   emit('update:isOpen', open)
 }
@@ -49,9 +43,10 @@ const handleFileChange = (event: Event) => {
   }
 }
 
-const handleSubmit = () => {
-  emit('add-item', { ...form })
-  handleCancel()
+const handleSubmit = async() => {
+  const ok = await create({ ...form })
+
+  if(ok)handleCancel()
 }
 
 const handleCancel = () => {
@@ -211,29 +206,24 @@ const handleCancel = () => {
           </div>
           <!-- Action Buttons -->
           <div class="flex justify-end gap-4 pt-4">
-            <button
+            <Button
+            :disabled="isLoading"
               type="button"
               @click="handleCancel"
               class="px-6 py-2 bg-gray-200 rounded-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-gray-800 text-sm font-semibold leading-tight hover:bg-gray-100 transition-colors"
             >
               Cancel
-            </button>
+            </Button>
 
-            <button
-              type="submit"
+            <Button
+            :disabled="isLoading"
               @click="handleSubmit"
               class="px-6 py-2 bg-gray-200 rounded-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-red-400 text-sm font-semibold leading-tight hover:bg-gray-100 transition-colors flex items-center gap-2"
             >
-              <div class="w-4 h-4 relative">
-                <div
-                  class="w-2.5 h-0 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t border-red-400"
-                ></div>
-                <div
-                  class="w-0 h-2.5 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l border-red-400"
-                ></div>
-              </div>
+              <Loader2 v-if="isLoading" class="w-4 h-4" />
+              <Plus v-else class="w-4 h-4" />
               Add Item
-            </button>
+            </Button>
           </div>
         </div>
       </div>

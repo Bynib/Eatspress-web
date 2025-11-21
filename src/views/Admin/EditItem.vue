@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { Edit } from 'lucide-vue-next'
+import { Edit, Loader2 } from 'lucide-vue-next'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import type { Menu } from '@/models/menu'
+import { useMenuStore } from '@/stores/menu';
+import { Button } from '@/components/ui/button';
 
 const props = defineProps<{
   isOpen: boolean
@@ -11,9 +13,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:isOpen': [value: boolean]
-  'update-item': [id: number, item: Partial<Menu>]
+  'handle-edit-cancel': []
 }>()
-
+const menu = useMenuStore()
 const form = reactive<Partial<Menu>>({
   item_Id: 0,
   name: '',
@@ -62,8 +64,30 @@ const handleFileChange = (event: Event) => {
 
 const handleSubmit = () => {
   if (props.menuItem) {
-    emit('update-item', props.menuItem.item_Id, { ...form })
+    handleUpdateItem(props.menuItem.item_Id, { ...form })
+  }
+}
+const handleUpdateItem = async (item_Id: number, updatedItem: Partial<Menu>) => {
+
+  const ok = await menu.update(item_Id, updatedItem)
+  if(ok){
     handleCancel()
+    emit('handle-edit-cancel')
+    const index = menu.items.findIndex((item) => item.item_Id === item_Id)
+  if (index > -1) {
+    // Update the item with new data
+    menu.items[index] = {
+      ...menu.items[index],
+      name: updatedItem.name!,
+      description: updatedItem.description!,
+      price: updatedItem.price!,
+      category_Id: updatedItem.category_Id!,
+      image: updatedItem.image
+        ? URL.createObjectURL(updatedItem.image! as Blob)
+        : menu.items[index].image,
+    }
+    console.log('Item updated:', item_Id, updatedItem)
+  }
   }
 }
 
@@ -218,21 +242,24 @@ const handleCancel = () => {
 
           <!-- Action Buttons -->
           <div class="flex justify-end gap-4 pt-4">
-            <button
-              type="button"
+            <Button
+            :disabled="menu.isLoading"
+            type="button"
               @click="handleCancel"
               class="cursor-pointer px-6 py-2 bg-gray-200 rounded-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-gray-800 text-sm font-semibold leading-tight hover:bg-gray-100 transition-colors"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
+              :disabled="menu.isLoading"
               type="submit"
               @click="handleSubmit"
               class="cursor-pointer px-6 py-2 bg-gray-200 rounded-xl shadow-[-8px_-8px_16px_0px_rgba(255,255,255,1.00)] shadow-[8px_8px_16px_0px_rgba(190,190,190,1.00)] text-blue-600 text-sm font-semibold leading-tight hover:bg-gray-100 transition-colors flex items-center gap-2"
             >
-              <Edit class="w-4 h-4" />
+              <Loader2 v-if="menu.isLoading" class="w-4 h-4" />
+              <Edit v-else class="w-4 h-4" />
               Update Item
-            </button>
+            </Button>
           </div>
         </div>
       </div>
